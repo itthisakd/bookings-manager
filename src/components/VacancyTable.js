@@ -17,7 +17,7 @@ const useStyles = makeStyles({
 })
 
 export default function DenseTable(props) {
-  const { nightsObj, roomNo } = props
+  const { nightsObj, roomNo, bookedNights } = props
   const classes = useStyles()
 
   return (
@@ -42,16 +42,40 @@ export default function DenseTable(props) {
                 {room.num}
               </TableCell>
               <TableCell>{room.type}</TableCell>
-              {nightsObj.datesISO.map((date) => (
-                <TableCell align="center">
-                  <Checkbox
-                    room={room.num}
-                    date={date}
-                    color="primary"
-                    inputProps={{ 'aria-label': 'secondary checkbox' }}
-                  />
-                </TableCell>
-              ))}
+              {nightsObj.datesISO.map((date) => {
+                //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––BUG HERE NEITHER OF
+                console.log('date :>> ', date)
+                console.log('bookedNights :>> ', bookedNights)
+                console.log('bookedNights[date] :>> ', bookedNights[date])
+                console.log(
+                  'Object.keys(bookedNights) :>> ',
+                  Object.keys(bookedNights)
+                )
+                if (Object.keys(bookedNights).includes(date)) {
+                  console.log('INSIDE OF IF')
+                  bookedNights[date].includes(room.num) ? (
+                    <TableCell align="center">
+                      <Checkbox
+                        room={room.num}
+                        date={date}
+                        color="primary"
+                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                      />
+                    </TableCell>
+                  ) : (
+                    <TableCell align="center">
+                      <Checkbox
+                        disabled
+                        checked
+                        room={room.num}
+                        date={date}
+                        color="primary"
+                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                      />
+                    </TableCell>
+                  )
+                }
+              })}
             </TableRow>
           ))}
         </TableBody>

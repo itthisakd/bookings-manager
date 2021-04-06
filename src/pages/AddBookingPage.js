@@ -13,8 +13,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import InputBox from '../components/InputBox'
 const { DateTime } = require('luxon')
 
-let found = true
-
 const useStyles = makeStyles((theme) => ({
   root: {
     '& .MuiTextField-root': {
@@ -53,17 +51,43 @@ const roomNo = [
   }
 ]
 
-const inDate = DateTime.fromISO('2021-01-01')
-const outDate = DateTime.fromISO('2021-01-30')
+//from this
+// const bookedNights = [
+//   {
+//     room_id: 112,
+//     nightlyDate: '10-04-2021'
+//   },
+//   {
+//     room_id: 112,
+//     nightlyDate: '11-04-2021'
+//   },
+//   {
+//     room_id: 220,
+//     nightlyDate: '15-04-2021'
+//   },
+//   {
+//     room_id: 223,
+//     nightlyDate: '11-04-2021'
+//   }
+// ]
+
+//to this
+const bookedNights = {
+  '2021-04-10': [112],
+  '2021-04-11': [112, 223],
+  '2021-04-15': [220]
+}
 
 //–––––––––––––––––––––––––––––––––––––––––––––––
 
 //returns arrays of nights
-const nightsGenerator = (inD, outD) => {
+const nightsGenerator = (inDD, outDD) => {
+  const inD = DateTime.fromISO(inDD)
+  const outD = DateTime.fromISO(outDD)
   const nights = outD.diff(inD, 'days').toObject().days
   let datesISO = []
   let i = 0
-  let tempDate = inDate
+  let tempDate = inD
   while (datesISO.length !== nights) {
     datesISO.push(tempDate.plus({ days: i++ }).toISODate())
   }
@@ -78,15 +102,20 @@ const nightsGenerator = (inD, outD) => {
   return { nights, datesISO, datesReformatted }
 }
 
-const nightsObj = nightsGenerator(inDate, outDate)
-
 export default function AddBookingPage() {
   const classes = useStyles()
   const [dateIn, setDateIn] = useState('')
   const [dateOut, setDateOut] = useState('')
-  let temp
+  const [nightsObj, setNightsObj] = useState({})
+  const [found, setFound] = useState(false)
 
-  const handleOutChange = (e) => {}
+  const onFindClick = () => {
+    if (dateIn && dateOut) {
+      setNightsObj(nightsGenerator(dateIn, dateOut))
+      setFound(true)
+      console.log('Clicked')
+    }
+  }
 
   return (
     <div>
@@ -116,10 +145,19 @@ export default function AddBookingPage() {
               id="dateIn"
               label="Check-in Date"
               type="date"
-              defaultValue={new Date().toISOString().slice(0, 10)}
+              format="dd/MM/yyyy"
               onChange={(e) => {
                 setDateIn(e.target.value)
-                temp = e.target.value
+                //––––––––––––––––––––––––––––––––––––––––––-FIGURE OUT HOW TO FIX THE BUG THAT THE CHECK OUT DATE CAN BE BEFORE CHECK IN DATE
+                if (dateOut < dateIn)
+                  setDateOut(
+                    DateTime.fromISO(e.target.value)
+                      .plus({ days: 1 })
+                      .toISODate()
+                  )
+              }}
+              InputProps={{
+                inputProps: { min: new Date().toISOString().slice(0, 10) }
               }}
               InputLabelProps={{
                 shrink: true
@@ -127,16 +165,25 @@ export default function AddBookingPage() {
             />
           </div>
           <div className="mx-3">
-            {console.log('dateIn :>> ', dateIn)}
             {dateIn ? (
               <TextField
                 required
                 id="dateOut"
                 label="Check-out Date"
                 type="date"
-                defaultValue={new Date(temp)}
+                format="dd/MM/yyyy"
+                value={dateOut}
+                defaultValue={DateTime.fromISO(dateIn)
+                  .plus({ days: 1 })
+                  .toISODate()}
+                onChange={(e) => setDateOut(e.target.value)}
                 InputLabelProps={{
                   shrink: true
+                }}
+                InputProps={{
+                  inputProps: {
+                    min: DateTime.fromISO(dateIn).plus({ days: 1 }).toISODate()
+                  }
                 }}
               />
             ) : (
@@ -146,7 +193,7 @@ export default function AddBookingPage() {
                 id="dateOut"
                 label="Check-out Date"
                 type="date"
-                defaultValue={new Date().toISOString().slice(0, 10)}
+                format="dd/MM/yyyy"
                 InputLabelProps={{
                   shrink: true
                 }}
@@ -154,7 +201,7 @@ export default function AddBookingPage() {
             )}
           </div>
           <div className="mx-3">
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={onFindClick}>
               Find
             </Button>
           </div>
@@ -163,7 +210,14 @@ export default function AddBookingPage() {
 
       {found && (
         <>
-          <VacancyTable nightsObj={nightsObj} roomNo={roomNo} />
+          {nightsObj && (
+            <VacancyTable
+              nightsObj={nightsObj}
+              roomNo={roomNo}
+              bookedNights={bookedNights}
+            />
+          )}
+
           <div className="mx-3">
             <Button variant="contained" color="primary">
               CLEAR ALL
