@@ -42,6 +42,18 @@ const useStyles = makeStyles((theme) => ({
 export default function LogInPage() {
   const classes = useStyles()
   const history = useHistory()
+
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState({})
+
+  const validateInput = () => {
+    const newError = {}
+    if (!username) newError.username = 'Username required.'
+    if (!password) newError.password = 'Password required.'
+    setError(newError)
+  }
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -63,6 +75,8 @@ export default function LogInPage() {
             name="username"
             autoComplete="username"
             autoFocus
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -74,6 +88,8 @@ export default function LogInPage() {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
@@ -89,11 +105,11 @@ export default function LogInPage() {
             Sign In
           </Button>
           <Grid container>
-            <Grid item xs>
+            {/* <Grid item xs>
               <Link href="#" variant="body2">
                 Forgot password?
               </Link>
-            </Grid>
+            </Grid> */}
             <Grid item>
               <Link onClick={() => history.push('/register')} variant="body2">
                 {"Don't have an account? Sign Up"}

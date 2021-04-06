@@ -48,17 +48,18 @@ export default function MyAppBar() {
     <div className={classes.root}>
       <AppBar position="static">
         <SimpleTabs />
-        {auth && (
+        {/* <IconButton
+          aria-label="account of current user"
+          aria-controls="menu-appbar"
+          aria-haspopup="true"
+          onClick={handleMenu}
+          color="inherit"
+        >
+          <AccountCircle />
+        </IconButton> */}
+        {/* {auth && (
           <div>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
+            
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
@@ -77,7 +78,7 @@ export default function MyAppBar() {
               <MenuItem onClick={handleClose}>Log Out</MenuItem>
             </Menu>
           </div>
-        )}
+        )} */}
       </AppBar>
     </div>
   )
