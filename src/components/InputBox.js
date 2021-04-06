@@ -18,10 +18,11 @@ export default function FormPropsTextFields(props) {
     <form className={classes.root} noValidate autoComplete="off">
       <div>
         <TextField
-          id="outlined-search"
+          id={props.id}
           label={props.label}
           type={props.type}
-          variant="outlined"
+          defaultValue={props.defaultValue}
+          variant={props.variant}
         />
       </div>
     </form>

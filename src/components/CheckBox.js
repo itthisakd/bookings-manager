@@ -11,9 +11,8 @@ export default function Checkboxes() {
   return (
     <div>
       <Checkbox
-        checked={checked}
         onChange={handleChange}
-        inputProps={{ 'aria-label': 'primary checkbox' }}
+        inputProps={{ 'aria-label': 'secondary checkbox' }}
       />
       <Checkbox
         defaultChecked
