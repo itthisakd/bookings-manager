@@ -27,7 +27,8 @@ const columns = [
   },
   { field: 'guest', headerName: 'Guest', sortable: true, width: 150 },
 
-  { field: 'amount', headerName: 'Amount', type: 'number', width: 130 }
+  { field: 'amount', headerName: 'Amount', type: 'number', width: 130 },
+  { field: 'remarks', headerName: 'Remarks', type: 'string', width: 300 }
   //exmaple
   // {
   //   field: 'fullName',
@@ -49,8 +50,9 @@ const rows = [
     created: Date(2020, 11, 4),
     checkIn: Date(2021, 2, 12),
     checkOut: Date(2021, 2, 13),
-    guest: "Amy Jones",
-    amount: 1245.50
+    guest: 'Amy Jones',
+    amount: 1245.5,
+    remarks: 'non-smoking'
   },
   {
     id: 2,
@@ -58,15 +60,76 @@ const rows = [
     created: Date(2020, 11, 4),
     checkIn: Date(2021, 2, 12),
     checkOut: Date(2021, 2, 13),
-    guest: "David Thims",
-    amount: 12245.50
+    guest: 'David Thims',
+    amount: 12245.5,
+    remarks: 'non-smoking'
+  },
+  {
+    id: 3,
+    status: 'BOOKED',
+    created: Date(2020, 11, 4),
+    checkIn: Date(2021, 2, 12),
+    checkOut: Date(2021, 2, 13),
+    guest: 'David Thims',
+    amount: 12245.5,
+    remarks: 'non-smoking'
+  },
+  {
+    id: 4,
+    status: 'BOOKED',
+    created: Date(2020, 11, 4),
+    checkIn: Date(2021, 2, 12),
+    checkOut: Date(2021, 2, 13),
+    guest: 'David Thims',
+    amount: 12245.5,
+    remarks: 'non-smoking'
+  },
+  {
+    id: 5,
+    status: 'BOOKED',
+    created: Date(2020, 11, 4),
+    checkIn: Date(2021, 2, 12),
+    checkOut: Date(2021, 2, 13),
+    guest: 'David Thims',
+    amount: 12245.5,
+    remarks: 'non-smoking'
+  },
+  {
+    id: 999,
+    status: 'BOOKED',
+    created: Date(2020, 11, 4),
+    checkIn: Date(2021, 2, 12),
+    checkOut: Date(2021, 2, 13),
+    guest: 'David Thims',
+    amount: 12245.5,
+    remarks: 'non-smoking'
+  },
+  {
+    id: 7,
+    status: 'BOOKED',
+    created: Date(2020, 11, 4),
+    checkIn: Date(2021, 2, 12),
+    checkOut: Date(2021, 2, 13),
+    guest: 'David Thims',
+    amount: 12245.5,
+    remarks: 'non-smoking'
   }
 ]
 
-export default function DataGridDemo() {
+export default function DataGridDemo(props) {
+  const { accessModal } = props
   return (
-    <div style={{ height: 400, width: '100%' }}>
-      <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection />
+    <div style={{ height: '100vh', width: '100%' }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        // pageSize={10}
+        checkboxSelection={false}
+        autoPageSize
+        rowHeight={45}
+        // getRowId={(row) => row.id}
+        onRowDoubleClick={accessModal}
+      />
     </div>
   )
 }

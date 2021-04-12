@@ -17,7 +17,13 @@ const useStyles = makeStyles({
 })
 
 export default function DenseTable(props) {
-  const { nightsObj, roomNo, bookedNights } = props
+  const {
+    nightsObj,
+    roomNo,
+    bookedNights,
+    setNightsChecked,
+    nightsChecked
+  } = props
   const classes = useStyles()
 
   return (
@@ -43,26 +49,37 @@ export default function DenseTable(props) {
               </TableCell>
               <TableCell>{room.type}</TableCell>
               {nightsObj.datesISO.map((date) => {
-                //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––BUG HERE NEITHER OF
-                console.log('date :>> ', date)
-                console.log('bookedNights :>> ', bookedNights)
-                console.log('bookedNights[date] :>> ', bookedNights[date])
-                console.log(
-                  'Object.keys(bookedNights) :>> ',
-                  Object.keys(bookedNights)
-                )
-                if (Object.keys(bookedNights).includes(date)) {
-                  console.log('INSIDE OF IF')
-                  bookedNights[date].includes(room.num) ? (
+                if (
+                  Object.keys(bookedNights).includes(date) === false ||
+                  bookedNights[date].includes(room.num) === false
+                ) {
+                  return (
                     <TableCell align="center">
                       <Checkbox
                         room={room.num}
                         date={date}
                         color="primary"
+                        onChange={(e) => {
+                          e.target.checked
+                            ? setNightsChecked([
+                                ...nightsChecked,
+                                { room: room.num, date }
+                              ])
+                            : setNightsChecked(
+                                nightsChecked.filter((night) => {
+                                  return !(
+                                    night.room === room.num &&
+                                    night.date === date
+                                  )
+                                })
+                              )
+                        }}
                         inputProps={{ 'aria-label': 'secondary checkbox' }}
                       />
                     </TableCell>
-                  ) : (
+                  )
+                } else {
+                  return (
                     <TableCell align="center">
                       <Checkbox
                         disabled

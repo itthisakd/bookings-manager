@@ -12,7 +12,9 @@ const menuOptions = [
   { path: '/reservations', name: 'Reservations' },
   { path: '/enquiry', name: 'Enquiries' },
   { path: '/inventory', name: 'Inventory' },
-  { path: '/calendar', name: 'Calendar' }
+  { path: '/calendar', name: 'Calendar' },
+  { path: '/rates', name: 'Rates' },
+  { path: '/staff', name: 'Staff' }
 ]
 
 export default function SimpleMenu() {
@@ -44,7 +46,11 @@ export default function SimpleMenu() {
         onClose={handleClose}
       >
         {menuOptions.map(({ path, name }) => {
-          return <MenuItem onClick={() => history.push(path)}>{name}</MenuItem>
+          return (
+            <MenuItem key={path} onClick={() => history.push(path)}>
+              {name}
+            </MenuItem>
+          )
         })}
       </Menu>
     </div>

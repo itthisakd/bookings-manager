@@ -74,8 +74,8 @@ const roomNo = [
 //to this
 const bookedNights = {
   '2021-04-10': [112],
-  '2021-04-11': [112, 223],
-  '2021-04-15': [220]
+  '2021-04-11': [112, 211],
+  '2021-04-15': [212]
 }
 
 //–––––––––––––––––––––––––––––––––––––––––––––––
@@ -108,6 +108,7 @@ export default function AddBookingPage() {
   const [dateOut, setDateOut] = useState('')
   const [nightsObj, setNightsObj] = useState({})
   const [found, setFound] = useState(false)
+  const [nightsChecked, setNightsChecked] = useState([])
 
   const onFindClick = () => {
     if (dateIn && dateOut) {
@@ -215,12 +216,19 @@ export default function AddBookingPage() {
               nightsObj={nightsObj}
               roomNo={roomNo}
               bookedNights={bookedNights}
+              setNightsChecked={setNightsChecked}
+              nightsChecked={nightsChecked}
             />
           )}
 
-          <div className="mx-3">
+          <div className="m-3">
             <Button variant="contained" color="primary">
               CLEAR ALL
+            </Button>
+          </div>
+          <div className="m-3">
+            <Button variant="contained" color="primary">
+              CREATE ENQUIRY
             </Button>
           </div>
         </>
