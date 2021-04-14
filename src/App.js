@@ -9,7 +9,6 @@ import AddBookingPage from './pages/AddBookingPage'
 import EnquiryPage from './pages/EnquiryPage'
 import ReservationsPage from './pages/ReservationsPage'
 import CalendarPage from './pages/CalendarPage'
-import CreateStaffPage from './pages/CreateStaffPage'
 import StaffPage from './pages/StaffPage'
 import RatesPage from './pages/RatesPage'
 import localStorageService from './services/localStorageService'
@@ -27,7 +26,6 @@ const privateRoutes = [
   { path: '/enquiry', component: EnquiryPage },
   { path: '/reservations', component: ReservationsPage },
   { path: '/calendar', component: CalendarPage },
-  { path: '/staff/create', component: CreateStaffPage },
   { path: '/staff', component: StaffPage },
   { path: '/rates', component: RatesPage }
 ]

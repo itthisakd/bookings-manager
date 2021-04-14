@@ -3,7 +3,7 @@ import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 // import PostForm from "../components/PostForm.js";
 import React from 'react'
 import MenuBar from '../components/MenuBar.js'
@@ -22,44 +22,53 @@ import EditIcon from '@material-ui/icons/Edit'
 import SaveAltIcon from '@material-ui/icons/SaveAlt'
 import TextField from '@material-ui/core/TextField'
 
-const roomTypes = {
-  types: [
-    {
-      id: 1,
-      name: 'Standard',
-      rate: 1000
-    },
-    {
-      id: 2,
-      name: 'Superior',
-      rate: 1500
-    },
-    {
-      id: 3,
-      name: 'Deluxe',
-      rate: 2000
-    }
-  ]
-}
-
-const preloadedRates = Object.fromEntries(
-  roomTypes.types.map((type) => [type.id, type.rate])
-)
-
 export default function RatesPage() {
+  //TODO –––––––––––––– GET API method to get following data
+  const roomTypes = {
+    types: [
+      {
+        id: 1,
+        name: 'Standard',
+        rate: 1000
+      },
+      {
+        id: 2,
+        name: 'Superior',
+        rate: 1500
+      },
+      {
+        id: 3,
+        name: 'Deluxe',
+        rate: 2000
+      }
+    ]
+  }
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+
+  const preloadedRates = Object.fromEntries(
+    roomTypes.types.map((type) => [type.id, type.rate])
+  )
+
   const [editMode, setEditMode] = useState(false)
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, getValues, errors } = useForm({
     defaultValues: preloadedRates
   })
+  //FIXME ––––––––––––––––––– BUG: data entered not set into data of useForm
+  // problem seems to be that the input vale cant override default value
 
   const handleEditClick = () => {
     setEditMode(true)
   }
 
   const onSubmit = (data) => {
-    console.log(data)
+    console.log(getValues())
     setEditMode(false)
   }
+
+  //TODO ––––––––––––––––– POST API method to update with data below
+  const data = getValues()
+
+  //TODO ––––––––––––––––– add loading & sucess
 
   return (
     <div>
@@ -121,20 +130,39 @@ export default function RatesPage() {
               </TableHead>
               <TableBody>
                 {roomTypes.types.map((type) => {
-                  console.log(type.id)
+                  const roomId = type.id
                   return editMode ? (
                     <TableRow>
                       <TableCell>{type.name}</TableCell>
                       <TableCell>
-                        <TextField
-                          //FIXME ––––––––––––––––––––––––––––––––––––values not registered
-                          {...register(`${type.id}`)}
+                        {/* <Controller
+                          as={TextField}
                           key={type.id}
                           name={type.id}
                           variant="outlined"
                           size="small"
                           type="interger"
                           style={{ width: '100px' }}
+                          control={control}
+                          defaultValue={type.rate}
+                          ref={register(`${type.id}`)}
+                        /> */}
+                        <TextField
+                          {...register(`${type.id}`, {
+                            required: 'Rate required!'
+                          })}
+                          key={type.id}
+                          name={type.id}
+                          variant="outlined"
+                          size="small"
+                          type="number"
+                          defaultValue={type.rate}
+                          style={{ width: '100px' }}
+                          error={!!errors?.roomId}
+                          helperText={
+                            !!errors?.message && errors?.message?.roomId
+                          }
+                          //FIXME ––––––––––––––––––– BUG: error messages not showing
                         />
                       </TableCell>
                     </TableRow>

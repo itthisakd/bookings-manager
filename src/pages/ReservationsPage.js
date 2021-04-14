@@ -3,14 +3,8 @@ import React from 'react'
 import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import { useState } from 'react'
-import { useHistory } from 'react-router-dom'
 import MenuBar from '../components/MenuBar.js'
-import DatePicker from '../components/DatePicker'
 import Container from '@material-ui/core/Container'
-import DropDown from '../components/DropDown'
-import InputBox from '../components/InputBox'
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
 import ReservationsDataGrid from '../components/ReservationsDataGrid'
 import ReservModal from '../components/ResrvModal'
 
@@ -25,18 +19,18 @@ export default function ReservationsPage() {
   }
   //––––––––––––––––––––––––––––––––––––––––––––––––
 
-  //SECTION: states and functions for ReservationsDataGrid
-  const accessModal = async (row) => {
-    console.log('row.id :>> ', row.id)
-    //then GET reservation by id, and set state of bookingInfo with info from reservation
-    await setBookingInfo({
-      id: 123,
-      status: 'BOOKED',
+  //TODO –––––––––––––– add GET API method to get all bookingInfo in the format of
+  const bookingInfoFrom = [
+    {
+      id: 999,
+      status: 'booked',
       createdAt: new Date(2020, 11, 4).toISOString(),
       updatedAt: null,
       checkIn: new Date(2021, 2, 12).toISOString(),
       checkOut: new Date(2021, 2, 13).toISOString(),
       guestName: 'Amy Jones',
+      phoneNumber: '0925436174',
+      email: 'yoohoo@yahoo.com',
       amount: 1245.5,
       paid: 1,
       remarks: 'non-smoking',
@@ -56,7 +50,17 @@ export default function ReservationsPage() {
           rate: 1500
         }
       ]
-    })
+    }
+  ].filter((booking) => booking.status !== 'enquiry')
+  //––––––––––––––––––––––––––––––––––––––––––––––––
+
+  //SECTION: states and functions for ReservationsDataGrid
+  const accessModal = async (row) => {
+    console.log('row.id :>> ', row.id)
+    //then set reservation by id, and set state of bookingInfo with info from reservation
+    await setBookingInfo(
+      bookingInfoFrom.filter((booking) => booking.id == row.id)[0]
+    )
     // then opne modal and display modal with the state
     setOpen(true)
   }
