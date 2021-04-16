@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -8,6 +8,7 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Checkbox from '@material-ui/core/Checkbox'
+
 const { DateTime } = require('luxon')
 
 const useStyles = makeStyles({
@@ -17,14 +18,62 @@ const useStyles = makeStyles({
 })
 
 export default function DenseTable(props) {
-  const {
-    nightsObj,
-    roomNo,
-    bookedNights,
-    setNightsChecked,
-    nightsChecked
-  } = props
+  const { nightsObj, modify, bookedNightsByResv } = props
   const classes = useStyles()
+  const [nightsChecked, setNightsChecked] = useState([])
+
+  //–––––––––––––––DATA REQUIRED––––––––––––––––––
+
+  const roomNo = [
+    {
+      num: 110,
+      type: 'Standard'
+    },
+    {
+      num: 111,
+      type: 'Standard'
+    },
+    {
+      num: 112,
+      type: 'Standard'
+    },
+    {
+      num: 210,
+      type: 'Superior'
+    },
+    {
+      num: 211,
+      type: 'Superior'
+    },
+    {
+      num: 212,
+      type: 'Superior'
+    }
+  ]
+
+  //from this
+  // const bookedNights = [
+  //   {
+  //     reservationId: 999
+  //     room_id: 220,
+  //     nightlyDate: new Date(2021, 2, 12).toISOString(),
+  //   },
+  // {
+  //     reservationId: 999
+  //     room_id: 221,
+  //     nightlyDate: new Date(2021, 2, 12).toISOString(),
+  //   },
+  // ]
+
+  //to this
+  const bookedNights = {
+    '2021-04-10': [112],
+    '2021-04-11': [112, 211],
+    '2021-04-15': [212],
+    '2021-03-12': [212]
+  }
+
+  //–––––––––––––––––––––––––––––––––––––––––––––––
 
   return (
     <TableContainer component={Paper}>
@@ -43,7 +92,7 @@ export default function DenseTable(props) {
         </TableHead>
         <TableBody>
           {roomNo.map((room) => (
-            <TableRow>
+            <TableRow hover="true">
               <TableCell component="th" scope="row">
                 {room.num}
               </TableCell>
@@ -79,6 +128,7 @@ export default function DenseTable(props) {
                     </TableCell>
                   )
                 } else {
+                  //FIXME
                   return (
                     <TableCell align="center">
                       <Checkbox
@@ -100,3 +150,56 @@ export default function DenseTable(props) {
     </TableContainer>
   )
 }
+
+//REVIEW THIS ADDITION LATER
+// addition:
+// else if (modify === 'true') {
+//                   bookedNightsByResv?.map((night) => {
+//                     if (
+//                       night.roomId === room.num &&
+//                       night.nightlyDate === date
+//                     ) {
+//                       return (
+//                         <TableCell align="center">
+//                           //FIXME
+//                           <Checkbox
+//                             checked
+//                             room={room.num}
+//                             date={date}
+//                             color="primary"
+//                             onChange={(e) => {
+//                               e.target.checked
+//                                 ? setNightsChecked([
+//                                     ...nightsChecked,
+//                                     { room: room.num, date }
+//                                   ])
+//                                 : setNightsChecked(
+//                                     nightsChecked.filter((night) => {
+//                                       return !(
+//                                         night.room === room.num &&
+//                                         night.date === date
+//                                       )
+//                                     })
+//                                   )
+//                             }}
+//                             inputProps={{ 'aria-label': 'secondary checkbox' }}
+//                           />
+//                         </TableCell>
+//                       )
+//                       //FIXME
+//                     } else {
+//                       return (
+//                         <TableCell align="center">
+//                           <Checkbox
+//                             disabled
+//                             checked
+//                             room={room.num}
+//                             date={date}
+//                             color="primary"
+//                             inputProps={{ 'aria-label': 'secondary checkbox' }}
+//                           />
+//                         </TableCell>
+//                       )
+//                     }
+//                   })
+//                 }

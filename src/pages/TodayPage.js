@@ -6,24 +6,49 @@ import { useHistory } from 'react-router-dom'
 // import PostForm from "../components/PostForm.js";
 import React from 'react'
 import MenuBar from '../components/MenuBar.js'
-import DatePicker from '../components/DatePicker'
+import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
-import CheckOutTodayGrid from '../components/CheckOutTodayGrid'
-import CheckInTodayGrid from '../components/CheckInTodayGrid'
-// import 'fontsource-roboto'
+import TodayDataGrid from '../components/TodayDataGrid'
 import Typography from '@material-ui/core/Typography'
+import TextField from '@material-ui/core/TextField'
+
+const { DateTime } = require('luxon')
+
+const useStyles = makeStyles((theme) => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 200
+  }
+}))
 
 export default function TodayPage() {
+  const classes = useStyles()
+
+  const [date, setDate] = useState(DateTime.now().toString().slice(0, 10))
   return (
     <div>
       <MenuBar />
       <body className="flex flex-col items-center contents-center">
         <br />
-        <DatePicker
+        <TextField
+          id="date"
           label="Date"
-          default={new Date().toISOString().slice(0, 10)}
+          type="date"
+          defaultValue={new Date().toISOString().slice(0, 10)}
+          className={classes.textField}
+          InputLabelProps={{
+            shrink: true
+          }}
+          onChange={(e) => {
+            setDate(e.target.value)
+          }}
         />
-        <Container name="reservations" className="p-0 m-0 h-full w-full">
+        <div className="w-11/12">
           <div className="inline-block w-1/2 h-screen p-0 m-0">
             <Typography
               variant="h5"
@@ -32,7 +57,7 @@ export default function TodayPage() {
             >
               <strong>Check-in</strong>
             </Typography>
-            <CheckInTodayGrid className="inline-block w-full h-screen p-0 m-0" />
+            <TodayDataGrid check="in" date={date} />
           </div>
           <div className="inline-block w-1/2 h-screen p-0 m-0">
             <Typography
@@ -42,17 +67,9 @@ export default function TodayPage() {
             >
               <strong>Check-out</strong>
             </Typography>
-            <CheckOutTodayGrid className="inline-block w-full h-screen p-0 m-0" />
+            <TodayDataGrid check="out" date={date} />
           </div>
-          {/* <Container
-            name="checkin"
-            className="inline w-min p-0 m-0"
-          ></Container>
-          <Container
-            name="checkout"
-            className=" inline w-min p-0 m-0"
-          ></Container> */}
-        </Container>
+        </div>
       </body>
     </div>
   )

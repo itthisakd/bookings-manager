@@ -15,10 +15,17 @@ import TableRow from '@material-ui/core/TableRow'
 import Container from '@material-ui/core/Container'
 import Button from '@material-ui/core/Button'
 import EditIcon from '@material-ui/icons/Edit'
-import SaveAltIcon from '@material-ui/icons/SaveAlt'
 import TextField from '@material-ui/core/TextField'
 import EventIcon from '@material-ui/icons/Event'
 import IconButton from '@material-ui/core/IconButton'
+import DoneIcon from '@material-ui/icons/Done'
+import ClearIcon from '@material-ui/icons/Clear'
+import VacancyTable from '../components/VacancyTable'
+import CheckIcon from '@material-ui/icons/Check'
+import Checkbox from '@material-ui/core/Checkbox'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import UploadButton from '../components/UploadButton'
+// import UploadFileIcon from '@material-ui/icons/UploadFile'
 
 const { DateTime } = require('luxon')
 
@@ -54,6 +61,17 @@ const useStyles = makeStyles((theme) => ({
   value: {
     padding: '6px',
     margin: '0'
+  },
+  subKey: {
+    padding: '6px',
+    margin: '0',
+    fontWeight: 'bold',
+    fontSize: '0.75em'
+  },
+  subValue: {
+    padding: '6px',
+    margin: '0',
+    fontSize: '0.75em'
   }
 }))
 
@@ -88,26 +106,60 @@ Fade.propTypes = {
   onExited: PropTypes.func
 }
 
+const nightsGenerator = (inDD, outDD) => {
+  const inD = DateTime.fromISO(inDD)
+  const outD = DateTime.fromISO(outDD)
+  const nights = outD.diff(inD, 'days').toObject().days
+  let datesISO = []
+  let i = 0
+  let tempDate = inD
+  while (datesISO.length !== nights) {
+    datesISO.push(tempDate.plus({ days: i++ }).toISODate())
+  }
+  const datesReformatted = datesISO.map((night) => {
+    let temp = DateTime.fromISO(night)
+      .toLocaleString(DateTime.DATE_MED)
+      .toUpperCase()
+      .split(',')
+      .map((item) => item.split(' '))
+    return temp[0]
+  })
+  return { nights, datesISO, datesReformatted }
+}
+
 export default function SpringModal(props) {
   const classes = useStyles()
-  const { open, setOpen, handleOpen, handleClose, bookingInfo } = props
-  const [editMode, setEditMode] = useState(false)
-  const [rescheduleMode, setRescheduleMode] = useState(false)
-  const [editRemarks, setEditRemarks] = useState(false)
+  const {
+    open,
+    setOpen,
+    handleOpen,
+    handleClose,
+    bookingInfo,
+    editRemarks,
+    setEditRemarks
+  } = props
+  const [modifyMode, setModifyMode] = useState(false)
 
-  const handleRescheduleClick = () => {
-    setRescheduleMode(true)
+  const handleEditRemarksDone = () => {
+    //TODO ––––––––––––––patch API method to change the remarks of the bookign
+    setEditRemarks(false)
   }
 
-  const handleEditRemarksClick = () => {
-    setEditRemarks(true)
+  const handleModifyDone = () => {
+    //TODO ––––––––––––––put API method to update booking with new nightsBooked
+    //TODO ––––––––––––––patch API method to change the booking status to MODIFIED
+
+    setModifyMode(false)
+  }
+
+  const handleCancelBooking = () => {
+    //TODO ––––––––––––patch API method to change booking status to CANCELLED
+    console.log('cancel booking')
   }
 
   return (
     <div>
       <Modal
-        aria-labelledby="spring-modal-title"
-        aria-describedby="spring-modal-description"
         className={classes.modal}
         open={open}
         onClose={handleClose}
@@ -119,57 +171,26 @@ export default function SpringModal(props) {
       >
         <Fade in={open}>
           <div className={classes.paper}>
-            <div className="flex justify-end">
+            <div className="flex row justify-between align-center p-3">
+              <Typography variant="h5" component="h2">
+                {`(Resv. ${bookingInfo.id})`}
+                {'   '}
+                <strong>{bookingInfo.guest}</strong>
+              </Typography>
               <Typography
                 variant="h5"
                 component="h2"
-                className="w-full text-left py-5 px-0"
+                style={
+                  bookingInfo.status === 'enquiry' ? { color: '#ff9800' } : null
+                }
               >
-                <strong>{bookingInfo.guestName}</strong>
+                <strong>{bookingInfo.status?.toUpperCase()}</strong>
               </Typography>
-              <div className="py-5 px-0">
-                {!editMode && (
-                  <Button
-                    variant="contained"
-                    color="default"
-                    size="small"
-                    startIcon={<EventIcon />}
-                    onClick={handleRescheduleClick}
-                    type="submit"
-                    size="small"
-                  >
-                    RESCHEDULE
-                  </Button>
-                )}
-                {!!editMode && (
-                  <Button
-                    variant="contained"
-                    color="default"
-                    size="small"
-                    color="secondary"
-                    startIcon={<SaveAltIcon />}
-                    type="submit"
-                  >
-                    Save
-                  </Button>
-                )}
-              </div>
             </div>
+
             <Container className={classes.flexContainer}>
               <div className="w-1/2 p-0">
                 <Grid container>
-                  <Grid item xs={6} className={classes.key}>
-                    ID:{' '}
-                  </Grid>
-                  <Grid item xs={6} className={classes.value}>
-                    {bookingInfo.id}
-                  </Grid>
-                  <Grid item xs={6} className={classes.key}>
-                    Booking Status:
-                  </Grid>
-                  <Grid item xs={6} className={classes.value}>
-                    {bookingInfo.status?.toUpperCase()}
-                  </Grid>
                   <Grid item xs={6} className={classes.key}>
                     Check-in:{' '}
                   </Grid>
@@ -202,58 +223,9 @@ export default function SpringModal(props) {
                   <Grid item xs={6} className={classes.value}>
                     {bookingInfo.amount}
                   </Grid>
-                  <Grid item xs={6} className={classes.key}>
-                    Created At:{' '}
-                  </Grid>
-                  <Grid item xs={6} className={classes.value}>
-                    {DateTime.fromISO(bookingInfo.createdAt).toFormat(
-                      'dd LLL yyyy'
-                    )}
-                  </Grid>
-                  <Grid item xs={6} className={classes.key}>
-                    Updated At:{' '}
-                  </Grid>
-                  <Grid item xs={6} className={classes.value}>
-                    {bookingInfo.updatedAt
-                      ? DateTime.fromISO(bookingInfo.updatedAt).toFormat(
-                          'dd LLL yyyy'
-                        )
-                      : null}
-                  </Grid>
                 </Grid>
               </div>
             </Container>
-            <div className="w-full">
-              <Grid container>
-                <Grid item xs={3} className={classes.key}>
-                  Remarks:
-                </Grid>
-                <Grid item xs={9} className={classes.value}>
-                  {!handleEditRemarksClick && (
-                    <>
-                      {bookingInfo.remarks ? bookingInfo.remarks : null}
-                      <IconButton
-                        className={classes.smallButton}
-                        onClick={handleEditRemarksClick}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </>
-                  )}
-                  {handleEditRemarksClick && (
-                    <>
-                      <TextField
-                        name="remarks"
-                        variant="outlined"
-                        defaultValue={bookingInfo.remarks}
-                        size="small"
-                        className={{ length: '150px' }}
-                      />
-                    </>
-                  )}
-                </Grid>
-              </Grid>
-            </div>
 
             <Grid container>
               <TableContainer>
@@ -269,7 +241,6 @@ export default function SpringModal(props) {
                   </TableHead>
                   <TableBody>
                     {bookingInfo.rooms?.map((row) => {
-                      console.log('inside')
                       return (
                         <TableRow key={row.name}>
                           <TableCell>{row.num}</TableCell>
@@ -292,6 +263,89 @@ export default function SpringModal(props) {
                 </Table>
               </TableContainer>
             </Grid>
+
+            <Grid container>
+              <Grid item xs={12} style={{ margin: '10px 0' }}>
+                <Typography variant="body1" component="div">
+                  To confirm this booking, please enter details below...
+                </Typography>
+              </Grid>
+              <Grid item xs={2} className={classes.value}>
+                Mobile:
+              </Grid>
+              <Grid item xs={4} className={classes.value}>
+                <TextField
+                  name="mobile"
+                  variant="outlined"
+                  defaultValue={bookingInfo.remarks}
+                  size="small"
+                  // style={{ width: '500px' }}
+                />
+              </Grid>
+              <Grid item xs={3} className={classes.value}>
+                Payment Slip:
+              </Grid>
+              <Grid item xs={3} className={classes.value}>
+                <UploadButton />
+              </Grid>
+              <Grid item xs={2} className={classes.value}>
+                Email:
+              </Grid>
+              <Grid item xs={4} className={classes.value}>
+                <TextField
+                  name="email"
+                  variant="outlined"
+                  defaultValue={bookingInfo.remarks}
+                  size="small"
+                  // style={{ width: '500px' }}
+                />
+              </Grid>
+              <Grid item xs={6} className={classes.value}></Grid>
+              <Grid item xs={2} className={classes.value}>
+                Remarks:
+              </Grid>
+              <Grid item xs={4} className={classes.value}>
+                <TextField
+                  name="remarks"
+                  variant="outlined"
+                  defaultValue={bookingInfo.remarks}
+                  size="small"
+                  multiline="true"
+                />
+              </Grid>
+              <Grid item xs={6}></Grid>
+            </Grid>
+
+            <div className="w-full p-0 my-3 flex row align-center justify-between">
+              <Button
+                variant="contained"
+                color="default"
+                size="small"
+                startIcon={<ClearIcon />}
+                onClick={handleCancelBooking}
+                //TODO ask "Confirm delete enquiry?"
+                type="submit"
+                size="small"
+                style={{ margin: '0 5px' }}
+              >
+                DELETE ENQUIRY
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                startIcon={<CheckIcon />}
+                onClick={() => {
+                  setModifyMode(true)
+                  //TODO if no payment upload, ask "Confirm this booking without payment?"
+                }}
+                type="submit"
+                size="small"
+                style={{ margin: '0 5px' }}
+              >
+                CONFIRM BOOKING
+              </Button>
+            </div>
           </div>
         </Fade>
       </Modal>

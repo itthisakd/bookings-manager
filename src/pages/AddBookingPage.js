@@ -22,64 +22,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-//–––––––––––––––DATA REQUIRED––––––––––––––––––
-
-const roomNo = [
-  {
-    num: 110,
-    type: 'Standard'
-  },
-  {
-    num: 111,
-    type: 'Standard'
-  },
-  {
-    num: 112,
-    type: 'Standard'
-  },
-  {
-    num: 210,
-    type: 'Superior'
-  },
-  {
-    num: 211,
-    type: 'Superior'
-  },
-  {
-    num: 212,
-    type: 'Superior'
-  }
-]
-
-//from this
-// const bookedNights = [
-//   {
-//     room_id: 112,
-//     nightlyDate: '10-04-2021'
-//   },
-//   {
-//     room_id: 112,
-//     nightlyDate: '11-04-2021'
-//   },
-//   {
-//     room_id: 220,
-//     nightlyDate: '15-04-2021'
-//   },
-//   {
-//     room_id: 223,
-//     nightlyDate: '11-04-2021'
-//   }
-// ]
-
-//to this
-const bookedNights = {
-  '2021-04-10': [112],
-  '2021-04-11': [112, 211],
-  '2021-04-15': [212]
-}
-
-//–––––––––––––––––––––––––––––––––––––––––––––––
-
 //returns arrays of nights
 const nightsGenerator = (inDD, outDD) => {
   const inD = DateTime.fromISO(inDD)
@@ -108,7 +50,6 @@ export default function AddBookingPage() {
   const [dateOut, setDateOut] = useState('')
   const [nightsObj, setNightsObj] = useState({})
   const [found, setFound] = useState(false)
-  const [nightsChecked, setNightsChecked] = useState([])
 
   const onFindClick = () => {
     if (dateIn && dateOut) {
@@ -211,15 +152,7 @@ export default function AddBookingPage() {
 
       {found && (
         <>
-          {nightsObj && (
-            <VacancyTable
-              nightsObj={nightsObj}
-              roomNo={roomNo}
-              bookedNights={bookedNights}
-              setNightsChecked={setNightsChecked}
-              nightsChecked={nightsChecked}
-            />
-          )}
+          {nightsObj && <VacancyTable nightsObj={nightsObj} />}
 
           <div className="m-3">
             <Button variant="contained" color="primary">

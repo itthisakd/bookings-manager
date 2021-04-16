@@ -130,7 +130,7 @@ export default function RatesPage() {
               </TableHead>
               <TableBody>
                 {roomTypes.types.map((type) => {
-                  const roomId = type.id
+                  const typeId = type.id
                   return editMode ? (
                     <TableRow>
                       <TableCell>{type.name}</TableCell>
@@ -158,11 +158,11 @@ export default function RatesPage() {
                           type="number"
                           defaultValue={type.rate}
                           style={{ width: '100px' }}
-                          error={!!errors?.roomId}
+                          error={!!errors?.typeId}
                           helperText={
-                            !!errors?.message && errors?.message?.roomId
+                            !!errors?.message && errors?.message?.typeId
                           }
-                          //FIXME ––––––––––––––––––– BUG: error messages not showing
+                          //FIXME ––––––––––––––––––– BUG: error messages not showin
                         />
                       </TableCell>
                     </TableRow>
