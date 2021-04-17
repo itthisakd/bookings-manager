@@ -135,7 +135,12 @@ export default function SpringModal(props) {
     editRemarks,
     setEditRemarks,
     bookedNightsByResv,
-    today
+    today,
+    register,
+    handleSubmit,
+    getValues,
+    remarks,
+    setRemarks
   } = props
   const [modifyMode, setModifyMode] = useState(false)
 
@@ -372,7 +377,8 @@ export default function SpringModal(props) {
                   >
                     CANCEL BOOKING
                   </Button>
-                  <Button
+                  //REVIEW removal of this section
+                  {/* <Button
                     variant="contained"
                     color="default"
                     size="small"
@@ -385,12 +391,13 @@ export default function SpringModal(props) {
                     style={{ margin: '0 5px' }}
                   >
                     MODIFY BOOKING
-                  </Button>
+                  </Button> */}
                 </div>
               )}
             </div>
           )}
-          {modifyMode && (
+          //REVIEW removal of this section
+          {/* {modifyMode && (
             //FIXME ––––––––––––––– change to such that modify = select new booked nights for such booking id
             <div className={classes.paper}>
               <Typography variant="h5" component="h2">
@@ -439,7 +446,7 @@ export default function SpringModal(props) {
                 </Button>
               </div>
             </div>
-          )}
+          )} */}
         </Fade>
       </Modal>
     </div>

@@ -20,12 +20,12 @@ import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 const publicRoutes = [{ path: '/login', component: LogInPage }]
 
 const privateRoutes = [
-  { path: '/inventory', component: InventoryPage },
+  // { path: '/inventory', component: InventoryPage },
   { path: '/today', component: TodayPage },
   { path: '/addbooking', component: AddBookingPage },
   { path: '/enquiry', component: EnquiryPage },
   { path: '/reservations', component: ReservationsPage },
-  { path: '/calendar', component: CalendarPage },
+  // { path: '/calendar', component: CalendarPage },
   { path: '/staff', component: StaffPage },
   { path: '/rates', component: RatesPage }
 ]

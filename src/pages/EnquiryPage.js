@@ -7,12 +7,14 @@ import MenuBar from '../components/MenuBar.js'
 import Container from '@material-ui/core/Container'
 import EnquiryDataGrid from '../components/EnquiryDataGrid'
 import EnquiryModal from '../components/EnquiryModal'
+import { useForm } from 'react-hook-form'
 
 export default function EnquiryPage() {
   //SECTION: states and functions for MODAL
   const [open, setOpen] = useState(false)
   const [bookingInfo, setBookingInfo] = useState({})
   const [editRemarks, setEditRemarks] = useState(false)
+  const { handleSubmit, register, getValues } = useForm()
 
   const handleClose = () => {
     setOpen(false)
@@ -87,6 +89,9 @@ export default function EnquiryPage() {
             bookingInfo={bookingInfo}
             editRemarks={editRemarks}
             setEditRemarks={setEditRemarks}
+            register={register}
+            handleSubmit={handleSubmit}
+            getValues={getValues}
           />
         </Container>
       </body>

@@ -8,6 +8,7 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Checkbox from '@material-ui/core/Checkbox'
+import Button from '@material-ui/core/Button'
 
 const { DateTime } = require('luxon')
 
@@ -18,9 +19,8 @@ const useStyles = makeStyles({
 })
 
 export default function DenseTable(props) {
-  const { nightsObj, modify, bookedNightsByResv } = props
+  const { nightsObj, nightsChecked, setNightsChecked, onCreateClick } = props
   const classes = useStyles()
-  const [nightsChecked, setNightsChecked] = useState([])
 
   //–––––––––––––––DATA REQUIRED––––––––––––––––––
 
@@ -97,6 +97,8 @@ export default function DenseTable(props) {
                 {room.num}
               </TableCell>
               <TableCell>{room.type}</TableCell>
+              {console.log(nightsChecked)}
+
               {nightsObj.datesISO.map((date) => {
                 if (
                   Object.keys(bookedNights).includes(date) === false ||
@@ -147,11 +149,35 @@ export default function DenseTable(props) {
           ))}
         </TableBody>
       </Table>
+      <div className="flex justify-between row">
+        <div className="m-3">
+          <Button variant="contained" color="default">
+            CLEAR ALL
+          </Button>
+        </div>
+        <div className="m-3">
+          <Button variant="contained" color="primary" onClick={onCreateClick}>
+            CREATE ENQUIRY
+          </Button>
+        </div>
+      </div>
     </TableContainer>
   )
 }
 
-//REVIEW THIS ADDITION LATER
+//return data
+const data = {
+  guest: 'Guest',
+  checkIn: '2020-12-12',
+  checkOut: '2020-12-13',
+  nightsChecked: [
+    { room: 110, date: '2021-04-20' },
+    { room: 110, date: '2021-04-21' },
+    { room: 111, date: '2021-04-21' }
+  ]
+}
+
+//REVIEW THIS ADDITION LATER, omit with chnage of plans and decide not to do
 // addition:
 // else if (modify === 'true') {
 //                   bookedNightsByResv?.map((night) => {

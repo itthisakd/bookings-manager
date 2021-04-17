@@ -11,6 +11,7 @@ import Button from '@material-ui/core/Button'
 import VacancyTable from '../components/VacancyTable'
 import { makeStyles } from '@material-ui/core/styles'
 import InputBox from '../components/InputBox'
+import { useForm } from 'react-hook-form'
 const { DateTime } = require('luxon')
 
 const useStyles = makeStyles((theme) => ({
@@ -50,6 +51,13 @@ export default function AddBookingPage() {
   const [dateOut, setDateOut] = useState('')
   const [nightsObj, setNightsObj] = useState({})
   const [found, setFound] = useState(false)
+  const [nightsChecked, setNightsChecked] = useState([])
+  const [details, setDetails] = useState({})
+  const [submitData, setSubmitData] = useState({})
+
+  const { handleSubmit, register } = useForm({
+    mode: 'onBlur'
+  })
 
   const onFindClick = () => {
     if (dateIn && dateOut) {
@@ -58,6 +66,28 @@ export default function AddBookingPage() {
       console.log('Clicked')
     }
   }
+
+  const onSubmit = (data) => {
+    console.log('data :>> ', data)
+    setDetails(data)
+  }
+
+  const onCreateClick = () => {
+    setSubmitData({ ...details, nightsChecked })
+  }
+
+  //TODO –––––––––––––– POST API method to create reservation
+  //data in:
+  // const data = {
+  //   guest: 'Guest',
+  //   checkIn: '2020-12-12',
+  //   checkOut: '2020-12-13',
+  //   nightsChecked: [
+  //     { room: 110, date: '2021-04-20' },
+  //     { room: 110, date: '2021-04-21' },
+  //     { room: 111, date: '2021-04-21' }
+  //   ]
+  // }
 
   return (
     <div>
@@ -68,23 +98,25 @@ export default function AddBookingPage() {
         className="flex flex-row items-center contents-center justify-around"
       >
         <form
-          name="search-fields"
-          className="w-min flex flex-row items-center contents-center justify-around m-auto"
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-min flex flex-row items-center contents-center justify-center m-auto"
           noValidate
           autoComplete="off"
         >
           <div className="mx-3">
             <InputBox
               label="Guest"
-              defaultValue="Guest"
-              id="standard-helperText"
+              name="guest"
               type="text"
+              //FIXME ––––––––––––––––––– BUG: value of guest undefined
+              {...register('guest')}
             />
           </div>
           <div className="mx-3">
             <TextField
               required
-              id="dateIn"
+              {...register('checkIn')}
+              name="checkIn"
               label="Check-in Date"
               type="date"
               format="dd/MM/yyyy"
@@ -109,8 +141,9 @@ export default function AddBookingPage() {
           <div className="mx-3">
             {dateIn ? (
               <TextField
+                {...register('checkOut')}
                 required
-                id="dateOut"
+                name="checkOut"
                 label="Check-out Date"
                 type="date"
                 format="dd/MM/yyyy"
@@ -143,7 +176,12 @@ export default function AddBookingPage() {
             )}
           </div>
           <div className="mx-3">
-            <Button variant="contained" color="primary" onClick={onFindClick}>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              onClick={onFindClick}
+            >
               Find
             </Button>
           </div>
@@ -152,18 +190,14 @@ export default function AddBookingPage() {
 
       {found && (
         <>
-          {nightsObj && <VacancyTable nightsObj={nightsObj} />}
-
-          <div className="m-3">
-            <Button variant="contained" color="primary">
-              CLEAR ALL
-            </Button>
-          </div>
-          <div className="m-3">
-            <Button variant="contained" color="primary">
-              CREATE ENQUIRY
-            </Button>
-          </div>
+          {nightsObj && (
+            <VacancyTable
+              nightsObj={nightsObj}
+              nightsChecked={nightsChecked}
+              setNightsChecked={setNightsChecked}
+              onCreateClick={onCreateClick}
+            />
+          )}
         </>
       )}
     </div>

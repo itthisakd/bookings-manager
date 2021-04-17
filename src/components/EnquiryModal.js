@@ -14,18 +14,10 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Container from '@material-ui/core/Container'
 import Button from '@material-ui/core/Button'
-import EditIcon from '@material-ui/icons/Edit'
 import TextField from '@material-ui/core/TextField'
-import EventIcon from '@material-ui/icons/Event'
-import IconButton from '@material-ui/core/IconButton'
-import DoneIcon from '@material-ui/icons/Done'
 import ClearIcon from '@material-ui/icons/Clear'
-import VacancyTable from '../components/VacancyTable'
 import CheckIcon from '@material-ui/icons/Check'
-import Checkbox from '@material-ui/core/Checkbox'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
 import UploadButton from '../components/UploadButton'
-// import UploadFileIcon from '@material-ui/icons/UploadFile'
 
 const { DateTime } = require('luxon')
 
@@ -136,21 +128,24 @@ export default function SpringModal(props) {
     handleClose,
     bookingInfo,
     editRemarks,
-    setEditRemarks
+    setEditRemarks,
+    register,
+    handleSubmit,
+    getValues
   } = props
-  const [modifyMode, setModifyMode] = useState(false)
+  // const [modifyMode, setModifyMode] = useState(false)
 
   const handleEditRemarksDone = () => {
     //TODO ––––––––––––––patch API method to change the remarks of the bookign
     setEditRemarks(false)
   }
 
-  const handleModifyDone = () => {
-    //TODO ––––––––––––––put API method to update booking with new nightsBooked
-    //TODO ––––––––––––––patch API method to change the booking status to MODIFIED
+  // const handleModifyDone = () => {
+  //   //TODO ––––––––––––––put API method to update booking with new nightsBooked
+  //   //TODO ––––––––––––––patch API method to change the booking status to MODIFIED
 
-    setModifyMode(false)
-  }
+  //   setModifyMode(false)
+  // }
 
   const handleCancelBooking = () => {
     //TODO ––––––––––––patch API method to change booking status to CANCELLED
@@ -277,8 +272,10 @@ export default function SpringModal(props) {
                 <TextField
                   name="mobile"
                   variant="outlined"
+                  value={getValues('remarks') ? getValues('remarks') : null}
                   defaultValue={bookingInfo.remarks}
                   size="small"
+                  {...register('remarks')}
                   // style={{ width: '500px' }}
                 />
               </Grid>
@@ -336,7 +333,7 @@ export default function SpringModal(props) {
                 size="small"
                 startIcon={<CheckIcon />}
                 onClick={() => {
-                  setModifyMode(true)
+                  // setModifyMode(true)
                   //TODO if no payment upload, ask "Confirm this booking without payment?"
                 }}
                 type="submit"

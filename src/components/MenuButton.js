@@ -8,13 +8,14 @@ import MenuIcon from '@material-ui/icons/Menu'
 
 const menuOptions = [
   { path: '/addbooking', name: 'New Booking' },
-  { path: '/today', name: "Today's Reservations" },
+  { path: '/today', name: 'Today' },
   { path: '/reservations', name: 'Reservations' },
   { path: '/enquiry', name: 'Enquiries' },
-  { path: '/inventory', name: 'Inventory' },
+  // { path: '/inventory', name: 'Inventory' },
   { path: '/calendar', name: 'Calendar' },
   { path: '/rates', name: 'Rates' },
   { path: '/staff', name: 'Staff' }
+  // { path: '/rooms', name: 'Room Status' }
 ]
 
 export default function SimpleMenu() {

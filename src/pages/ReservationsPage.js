@@ -7,6 +7,7 @@ import MenuBar from '../components/MenuBar.js'
 import Container from '@material-ui/core/Container'
 import ReservationsDataGrid from '../components/ReservationsDataGrid'
 import ReservModal from '../components/ReservModal'
+import { useForm } from 'react-hook-form'
 
 const { DateTime } = require('luxon')
 
@@ -15,6 +16,7 @@ export default function ReservationsPage() {
   const [open, setOpen] = useState(false)
   const [bookingInfo, setBookingInfo] = useState({})
   const [editRemarks, setEditRemarks] = useState(false)
+  const { handleSubmit, register, getValues } = useForm()
 
   const handleClose = () => {
     setOpen(false)
@@ -228,6 +230,9 @@ export default function ReservationsPage() {
             editRemarks={editRemarks}
             setEditRemarks={setEditRemarks}
             bookedNightsByResv={bookingInfo.bookedNights}
+            register={register}
+            handleSubmit={handleSubmit}
+            getValues={getValues}
           />
         </Container>
       </body>
