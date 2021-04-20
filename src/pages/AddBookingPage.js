@@ -1,17 +1,18 @@
-/** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
-import styled from '@emotion/styled'
-import { useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import MenuBar from '../components/MenuBar.js'
+import { useState, useEffect } from 'react'
+import MenuBar from '../components/shared/MenuBar.js'
 import React from 'react'
 import TextField from '@material-ui/core/TextField'
 import Container from '@material-ui/core/Container'
 import Button from '@material-ui/core/Button'
-import VacancyTable from '../components/VacancyTable'
+import VacancyTable from '../components/addbooking/VacancyTable'
 import { makeStyles } from '@material-ui/core/styles'
 import InputBox from '../components/InputBox'
 import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import Snackbar from '../components/shared/Snackbar'
+import * as yup from 'yup'
+import axios from '../config/axios'
+
 const { DateTime } = require('luxon')
 
 const useStyles = makeStyles((theme) => ({
@@ -45,6 +46,15 @@ const nightsGenerator = (inDD, outDD) => {
   return { nights, datesISO, datesReformatted }
 }
 
+const schema = yup.object().shape({
+  guest: yup
+    .string()
+    .matches(/^[a-zA-z ]$/g, 'Guest name must be alphabetical')
+    .required('Guest Name is required.'),
+  checkIn: yup.date().required('Check-in Date is required.'),
+  checkOut: yup.date().required('Check-in Date is required.')
+})
+
 export default function AddBookingPage() {
   const classes = useStyles()
   const [dateIn, setDateIn] = useState('')
@@ -53,9 +63,14 @@ export default function AddBookingPage() {
   const [found, setFound] = useState(false)
   const [nightsChecked, setNightsChecked] = useState([])
   const [details, setDetails] = useState({})
-  const [submitData, setSubmitData] = useState({})
+  const [openSnackbar, setOpenSnackbar] = useState(false)
 
-  const { handleSubmit, register } = useForm({
+  const {
+    handleSubmit,
+    register,
+    formState: { errors }
+  } = useForm({
+    resolver: yupResolver(schema),
     mode: 'onBlur'
   })
 
@@ -72,8 +87,19 @@ export default function AddBookingPage() {
     setDetails(data)
   }
 
-  const onCreateClick = () => {
-    setSubmitData({ ...details, nightsChecked })
+  const onCreateClick = async () => {
+    if (nightsChecked) {
+      await axios.create('/reservations/', {
+        guest: details.guest,
+        checkIn: nightsChecked[0].date,
+        checkOut: DateTime.fromISO(nightsChecked[nightsChecked.length - 1].date)
+          .plus({ days: 1 })
+          .toString()
+          .slice(0, 10),
+        nightsChecked
+      })
+      setOpenSnackbar(true)
+    }
   }
 
   //TODO –––––––––––––– POST API method to create reservation
@@ -93,6 +119,12 @@ export default function AddBookingPage() {
     <div>
       <MenuBar />
       <br />
+      <Snackbar
+        status="success"
+        message="Enquiry created successfully!"
+        open={openSnackbar}
+        setOpen={setOpenSnackbar}
+      />
       <Container
         name="reservations"
         className="flex flex-row items-center contents-center justify-around"
@@ -105,11 +137,12 @@ export default function AddBookingPage() {
         >
           <div className="mx-3">
             <InputBox
+              required
+              {...register('guest')}
               label="Guest"
               name="guest"
-              type="text"
-              //FIXME ––––––––––––––––––– BUG: value of guest undefined
-              {...register('guest')}
+              error={!!errors?.username}
+              helperText={errors?.username?.message}
             />
           </div>
           <div className="mx-3">

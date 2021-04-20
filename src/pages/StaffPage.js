@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useState } from 'react'
 import React from 'react'
-import MenuBar from '../components/MenuBar.js'
+import MenuBar from '../components/shared/MenuBar.js'
 import Container from '@material-ui/core/Container'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -14,8 +14,8 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
-import StaffCreateModal from '../components/StaffCreateModal'
-import StaffRemoveModal from '../components/StaffRemoveModal'
+import StaffCreateModal from '../components/staff/StaffCreateModal'
+import StaffRemoveModal from '../components/staff/StaffRemoveModal'
 
 export default function StaffPage() {
   const [openCreateModal, setOpenCreateModal] = useState(false)

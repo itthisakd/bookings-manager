@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 // import PostForm from "../components/PostForm.js";
 import React from 'react'
-import MenuBar from '../components/MenuBar.js'
+import MenuBar from '../components/shared/MenuBar.js'
 import Button from '@material-ui/core/Button'
 import { Container, IconButton, TextField } from '@material-ui/core'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'

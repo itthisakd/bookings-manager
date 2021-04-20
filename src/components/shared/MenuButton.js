@@ -12,7 +12,7 @@ const menuOptions = [
   { path: '/reservations', name: 'Reservations' },
   { path: '/enquiry', name: 'Enquiries' },
   // { path: '/inventory', name: 'Inventory' },
-  { path: '/calendar', name: 'Calendar' },
+  // { path: '/calendar', name: 'Calendar' },
   { path: '/rates', name: 'Rates' },
   { path: '/staff', name: 'Staff' }
   // { path: '/rooms', name: 'Room Status' }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Modal from '@material-ui/core/Modal'
@@ -6,18 +6,13 @@ import Backdrop from '@material-ui/core/Backdrop'
 import { useSpring, animated } from 'react-spring/web.cjs' // web.cjs is required for IE 11 support
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
 import TextField from '@material-ui/core/TextField'
 import { useForm } from 'react-hook-form'
 import Button from '@material-ui/core/Button'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import Snackbar from '../shared/Snackbar'
 
 const schema = yup.object().shape({
   username: yup
@@ -62,7 +57,6 @@ const useStyles = makeStyles((theme) => ({
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
-    height: '300px',
     width: '700px'
   },
   input: {
@@ -101,23 +95,34 @@ Fade.propTypes = {
   onExited: PropTypes.func
 }
 
-export default function SpringModal(props) {
+export default function SpringModal({ open, handleClose }) {
   const classes = useStyles()
-  const { open, handleClose } = props
-
-  const { register, handleSubmit, errors } = useForm({
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
     mode: 'onBlur',
     resolver: yupResolver(schema)
   })
-  // FIXME ––––––––––––––– BUG: unable to produce error messages
 
   const onSubmit = (data) => {
+    //TODO POST API method to create staff account
     console.log(data)
     console.log('errors :>> ', errors)
+    setOpenSnackbar(true)
+    if (data) handleClose()
   }
 
   return (
     <div>
+      <Snackbar
+        status="success"
+        message="Staff created successfully!"
+        open={openSnackbar}
+        setOpen={setOpenSnackbar}
+      />
       <Modal
         aria-labelledby="spring-modal-title"
         aria-describedby="spring-modal-description"
@@ -132,68 +137,84 @@ export default function SpringModal(props) {
       >
         <Fade in={open}>
           <form className={classes.paper} onSubmit={handleSubmit(onSubmit)}>
-            <Typography variant="h5" component="h4" className={classes.input}>
-              Create new account
-            </Typography>
-            <TextField
-              label="Username"
-              name="username"
-              type="text"
-              variant="outlined"
-              className={classes.input}
-              {...register('username', {
-                required: 'Username required!'
-              })}
-              error={!!errors?.username}
-              helperText={errors?.username?.message}
-            />
-            <TextField
-              label="Name"
-              name="name"
-              variant="outlined"
-              className={classes.input}
-              {...register('name', {
-                required: 'Name required!'
-              })}
-              error={!!errors?.name}
-              helperText={errors?.name?.message}
-            />
-            <TextField
-              label="Staff No."
-              name="staffNumber"
-              type="number"
-              variant="outlined"
-              className={classes.input}
-              {...register('staffNumber', {
-                required: 'Staff Number required!'
-              })}
-              error={!!errors?.staffNumber}
-              helperText={errors?.staffNumber?.message}
-            />
-            <TextField
-              label="Password"
-              name="password"
-              type="password"
-              variant="outlined"
-              className={classes.input}
-              {...register('password', {
-                required: 'Password required!'
-              })}
-              error={!!errors?.password}
-              helperText={errors?.password?.message}
-            />
-            <TextField
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              variant="outlined"
-              className={classes.input}
-              {...register('confirmPassword', {
-                required: 'Confirmed password required!'
-              })}
-              error={!!errors?.confirmPassword}
-              helperText={errors?.confirmPassword?.message}
-            />
+            <Grid container>
+              <Grid item xs={12}>
+                <Typography
+                  variant="h5"
+                  component="h4"
+                  className={classes.input}
+                >
+                  Create new account
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                {' '}
+                <TextField
+                  label="Username"
+                  name="username"
+                  type="text"
+                  variant="outlined"
+                  className={classes.input}
+                  {...register('username', {
+                    required: 'Username required!'
+                  })}
+                  error={!!errors?.username}
+                  helperText={errors?.username?.message}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  label="Name"
+                  name="name"
+                  variant="outlined"
+                  className={classes.input}
+                  {...register('name', {
+                    required: 'Name required!'
+                  })}
+                  error={!!errors?.name}
+                  helperText={errors?.name?.message}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  label="Staff No."
+                  name="staffNumber"
+                  type="number"
+                  variant="outlined"
+                  className={classes.input}
+                  {...register('staffNumber', {
+                    required: 'Staff Number required!'
+                  })}
+                  error={!!errors?.staffNumber}
+                  helperText={errors?.staffNumber?.message}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  label="Password"
+                  name="password"
+                  type="password"
+                  variant="outlined"
+                  className={classes.input}
+                  {...register('password')}
+                  error={!!errors?.password}
+                  helperText={errors?.password?.message}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  type="password"
+                  variant="outlined"
+                  className={classes.input}
+                  {...register('confirmPassword')}
+                  error={!!errors?.confirmPassword}
+                  helperText={errors?.confirmPassword?.message}
+                />
+              </Grid>
+            </Grid>
+
             <div className="p-5 block flex row justify-right align-center ">
               <Button
                 variant="contained"

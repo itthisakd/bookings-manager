@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 // import PostForm from "../components/PostForm.js";
 import React from 'react'
-import MenuBar from '../components/MenuBar.js'
+import MenuBar from '../components/shared/MenuBar.js'
 import Container from '@material-ui/core/Container'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -50,9 +50,7 @@ export default function RatesPage() {
   )
 
   const [editMode, setEditMode] = useState(false)
-  const { register, handleSubmit, getValues, errors } = useForm({
-    defaultValues: preloadedRates
-  })
+  const { register, handleSubmit, getValues, errors } = useForm()
   //FIXME ––––––––––––––––––– BUG: data entered not set into data of useForm
   // problem seems to be that the input vale cant override default value
 
@@ -62,6 +60,7 @@ export default function RatesPage() {
 
   const onSubmit = (data) => {
     console.log(getValues())
+    //TODO POST API method
     setEditMode(false)
   }
 
@@ -135,28 +134,14 @@ export default function RatesPage() {
                     <TableRow>
                       <TableCell>{type.name}</TableCell>
                       <TableCell>
-                        {/* <Controller
-                          as={TextField}
-                          key={type.id}
-                          name={type.id}
-                          variant="outlined"
-                          size="small"
-                          type="interger"
-                          style={{ width: '100px' }}
-                          control={control}
-                          defaultValue={type.rate}
-                          ref={register(`${type.id}`)}
-                        /> */}
                         <TextField
-                          {...register(`${type.id}`, {
-                            required: 'Rate required!'
-                          })}
+                          {...register(`${type.id}`)}
                           key={type.id}
                           name={type.id}
                           variant="outlined"
                           size="small"
                           type="number"
-                          defaultValue={type.rate}
+                          placeholder={type.rate}
                           style={{ width: '100px' }}
                           error={!!errors?.typeId}
                           helperText={

@@ -1,19 +1,15 @@
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import React from 'react'
 import { useState } from 'react'
-import ReactDOM from 'react-dom'
 import LogInPage from './auth/LogInPage'
-import InventoryPage from './pages/InventoryPage'
 import TodayPage from './pages/TodayPage'
 import AddBookingPage from './pages/AddBookingPage'
 import EnquiryPage from './pages/EnquiryPage'
 import ReservationsPage from './pages/ReservationsPage'
-import CalendarPage from './pages/CalendarPage'
 import StaffPage from './pages/StaffPage'
 import RatesPage from './pages/RatesPage'
 import localStorageService from './services/localStorageService'
 import './App.css'
-import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 
 //SECTION: customise select
 

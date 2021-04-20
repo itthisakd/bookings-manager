@@ -17,7 +17,6 @@ import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import ReactDOM from 'react-dom'
 import Copyright from '../components/Copyright'
 
 const useStyles = makeStyles((theme) => ({

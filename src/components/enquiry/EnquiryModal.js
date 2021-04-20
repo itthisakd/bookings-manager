@@ -17,7 +17,8 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import ClearIcon from '@material-ui/icons/Clear'
 import CheckIcon from '@material-ui/icons/Check'
-import UploadButton from '../components/UploadButton'
+import { useForm } from 'react-hook-form'
+import ConfirmModal from '../shared/ConfirmModal'
 
 const { DateTime } = require('luxon')
 
@@ -64,6 +65,14 @@ const useStyles = makeStyles((theme) => ({
     padding: '6px',
     margin: '0',
     fontSize: '0.75em'
+  },
+  uploadButton: {
+    '& > *': {
+      margin: theme.spacing(1)
+    }
+  },
+  input: {
+    display: 'none'
   }
 }))
 
@@ -129,27 +138,26 @@ export default function SpringModal(props) {
     bookingInfo,
     editRemarks,
     setEditRemarks,
-    register,
-    handleSubmit,
-    getValues
+    openConfirmModal,
+    setOpenConfirmModal
   } = props
-  // const [modifyMode, setModifyMode] = useState(false)
+  const { handleSubmit, register } = useForm()
+  const [enquiryToDelete, setEnquiryToDelete] = useState({})
+
+  const handleConfirmClick = () => {
+    //TODO –––––––––––– PATCH API method to change status
+    setOpenConfirmModal(false)
+  }
 
   const handleEditRemarksDone = () => {
     //TODO ––––––––––––––patch API method to change the remarks of the bookign
     setEditRemarks(false)
   }
 
-  // const handleModifyDone = () => {
-  //   //TODO ––––––––––––––put API method to update booking with new nightsBooked
-  //   //TODO ––––––––––––––patch API method to change the booking status to MODIFIED
-
-  //   setModifyMode(false)
-  // }
-
   const handleCancelBooking = () => {
+    setOpenConfirmModal(true)
+    console.log('enquiryToDelete :>> ', enquiryToDelete)
     //TODO ––––––––––––patch API method to change booking status to CANCELLED
-    console.log('cancel booking')
   }
 
   return (
@@ -221,128 +229,155 @@ export default function SpringModal(props) {
                 </Grid>
               </div>
             </Container>
+            <form
+              onSubmit={handleSubmit((data) => {
+                console.log(data)
+              })}
+            >
+              <Grid container>
+                <TableContainer>
+                  <Table className={classes.table} aria-label="simple table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Room No.</TableCell>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Check-in</TableCell>
+                        <TableCell>Check-out</TableCell>
+                        <TableCell>Rate</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {bookingInfo.rooms?.map((row) => {
+                        return (
+                          <TableRow key={row.name}>
+                            <TableCell>{row.num}</TableCell>
+                            <TableCell>{row.type}</TableCell>
+                            <TableCell>
+                              {DateTime.fromISO(row.inDate).toFormat(
+                                'dd LLL yyyy'
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {DateTime.fromISO(row.outDate).toFormat(
+                                'dd LLL yyyy'
+                              )}
+                            </TableCell>
+                            <TableCell>{row.rate}</TableCell>
+                          </TableRow>
+                        )
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Grid>
 
-            <Grid container>
-              <TableContainer>
-                <Table className={classes.table} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Room No.</TableCell>
-                      <TableCell>Type</TableCell>
-                      <TableCell>Check-in</TableCell>
-                      <TableCell>Check-out</TableCell>
-                      <TableCell>Rate</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {bookingInfo.rooms?.map((row) => {
-                      return (
-                        <TableRow key={row.name}>
-                          <TableCell>{row.num}</TableCell>
-                          <TableCell>{row.type}</TableCell>
-                          <TableCell>
-                            {DateTime.fromISO(row.inDate).toFormat(
-                              'dd LLL yyyy'
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {DateTime.fromISO(row.outDate).toFormat(
-                              'dd LLL yyyy'
-                            )}
-                          </TableCell>
-                          <TableCell>{row.rate}</TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
+              <Grid container>
+                <Grid item xs={12} style={{ margin: '10px 0' }}>
+                  <Typography variant="body1" component="div">
+                    To confirm this booking, please enter details below...
+                  </Typography>
+                </Grid>
+                <Grid item xs={2} className={classes.value}>
+                  Mobile:
+                </Grid>
+                <Grid item xs={4} className={classes.value}>
+                  <TextField
+                    {...register('mobile')}
+                    name="mobile"
+                    variant="outlined"
+                    size="small"
+                    // style={{ width: '500px' }}
+                  />
+                </Grid>
+                <Grid item xs={3} className={classes.value}>
+                  Payment Slip:
+                </Grid>
+                <Grid item xs={3} className={classes.value}>
+                  <div className={classes.uploadButton}>
+                    <input
+                      accept="image/*"
+                      className={classes.input}
+                      id="contained-button-file"
+                      type="file"
+                      {...register('paymentSlip')}
+                    />
+                    <label htmlFor="contained-button-file">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        component="span"
+                        size="small"
+                      >
+                        Upload
+                      </Button>
+                    </label>
+                  </div>
+                </Grid>
+                <Grid item xs={2} className={classes.value}>
+                  Email:
+                </Grid>
+                <Grid item xs={4} className={classes.value}>
+                  <TextField
+                    {...register('email')}
+                    name="email"
+                    variant="outlined"
+                    defaultValue={bookingInfo.remarks}
+                    size="small"
+                    // style={{ width: '500px' }}
+                  />
+                </Grid>
+                <Grid item xs={6} className={classes.value}></Grid>
+                <Grid item xs={2} className={classes.value}>
+                  Remarks:
+                </Grid>
+                <Grid item xs={4} className={classes.value}>
+                  <TextField
+                    {...register('remarks')}
+                    name="remarks"
+                    variant="outlined"
+                    size="small"
+                    multiline="true"
+                  />
+                </Grid>
+                <Grid item xs={6}></Grid>
+              </Grid>
 
-            <Grid container>
-              <Grid item xs={12} style={{ margin: '10px 0' }}>
-                <Typography variant="body1" component="div">
-                  To confirm this booking, please enter details below...
-                </Typography>
-              </Grid>
-              <Grid item xs={2} className={classes.value}>
-                Mobile:
-              </Grid>
-              <Grid item xs={4} className={classes.value}>
-                <TextField
-                  name="mobile"
-                  variant="outlined"
-                  value={getValues('remarks') ? getValues('remarks') : null}
-                  defaultValue={bookingInfo.remarks}
+              <div className="w-full p-0 my-3 flex row align-center justify-between">
+                <Button
+                  variant="contained"
+                  color="default"
                   size="small"
-                  {...register('remarks')}
-                  // style={{ width: '500px' }}
-                />
-              </Grid>
-              <Grid item xs={3} className={classes.value}>
-                Payment Slip:
-              </Grid>
-              <Grid item xs={3} className={classes.value}>
-                <UploadButton />
-              </Grid>
-              <Grid item xs={2} className={classes.value}>
-                Email:
-              </Grid>
-              <Grid item xs={4} className={classes.value}>
-                <TextField
-                  name="email"
-                  variant="outlined"
-                  defaultValue={bookingInfo.remarks}
+                  startIcon={<ClearIcon />}
+                  onClick={handleCancelBooking}
+                  //TODO ask "Confirm delete enquiry?"
                   size="small"
-                  // style={{ width: '500px' }}
+                  style={{ margin: '0 5px' }}
+                >
+                  DELETE ENQUIRY
+                </Button>
+                <ConfirmModal
+                  open={openConfirmModal}
+                  setOpenConfirmModal={setOpenConfirmModal}
+                  handleConfirmClick={handleConfirmClick}
+                  confirmMessage={`You are cancelling this reservation ID: ${bookingInfo.id}, Guest: ${bookingInfo.guest}.`}
+                  confirmTitle={'Cancel this reservation...'}
+                  handleConfirmClick={() => {
+                    setEnquiryToDelete({ id: bookingInfo.id })
+                  }}
                 />
-              </Grid>
-              <Grid item xs={6} className={classes.value}></Grid>
-              <Grid item xs={2} className={classes.value}>
-                Remarks:
-              </Grid>
-              <Grid item xs={4} className={classes.value}>
-                <TextField
-                  name="remarks"
-                  variant="outlined"
-                  defaultValue={bookingInfo.remarks}
+                <Button
+                  variant="contained"
+                  color="primary"
                   size="small"
-                  multiline="true"
-                />
-              </Grid>
-              <Grid item xs={6}></Grid>
-            </Grid>
-
-            <div className="w-full p-0 my-3 flex row align-center justify-between">
-              <Button
-                variant="contained"
-                color="default"
-                size="small"
-                startIcon={<ClearIcon />}
-                onClick={handleCancelBooking}
-                //TODO ask "Confirm delete enquiry?"
-                type="submit"
-                size="small"
-                style={{ margin: '0 5px' }}
-              >
-                DELETE ENQUIRY
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                startIcon={<CheckIcon />}
-                onClick={() => {
-                  // setModifyMode(true)
-                  //TODO if no payment upload, ask "Confirm this booking without payment?"
-                }}
-                type="submit"
-                size="small"
-                style={{ margin: '0 5px' }}
-              >
-                CONFIRM BOOKING
-              </Button>
-            </div>
+                  startIcon={<CheckIcon />}
+                  type="submit"
+                  size="small"
+                  style={{ margin: '0 5px' }}
+                >
+                  CONFIRM BOOKING
+                </Button>
+              </div>
+            </form>
           </div>
         </Fade>
       </Modal>

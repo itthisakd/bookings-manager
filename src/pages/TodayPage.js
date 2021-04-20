@@ -5,10 +5,10 @@ import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 // import PostForm from "../components/PostForm.js";
 import React from 'react'
-import MenuBar from '../components/MenuBar.js'
+import MenuBar from '../components/shared/MenuBar.js'
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
-import TodayDataGrid from '../components/TodayDataGrid'
+import TodayDataGrid from '../components/today/TodayDataGrid'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 

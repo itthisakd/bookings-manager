@@ -9,8 +9,7 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import CheckIcon from '@material-ui/icons/Check'
-import ReservModal from './ReservModal'
-
+import ReservModal from '../reservations/ReservModal'
 const { DateTime, todayDate } = require('luxon')
 
 const useStyles = makeStyles({

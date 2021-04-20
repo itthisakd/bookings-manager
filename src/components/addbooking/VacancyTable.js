@@ -18,6 +18,22 @@ const useStyles = makeStyles({
   }
 })
 
+function dynamicSort(property) {
+  var sortOrder = 1
+  if (property[0] === '-') {
+    sortOrder = -1
+    property = property.substr(1)
+  }
+  return function (a, b) {
+    /* next line works with strings and numbers,
+     * and you may want to customize it to your needs
+     */
+    var result =
+      a[property] < b[property] ? -1 : a[property] > b[property] ? 1 : 0
+    return result * sortOrder
+  }
+}
+
 export default function DenseTable(props) {
   const { nightsObj, nightsChecked, setNightsChecked, onCreateClick } = props
   const classes = useStyles()
@@ -97,7 +113,6 @@ export default function DenseTable(props) {
                 {room.num}
               </TableCell>
               <TableCell>{room.type}</TableCell>
-              {console.log(nightsChecked)}
 
               {nightsObj.datesISO.map((date) => {
                 if (
@@ -112,17 +127,21 @@ export default function DenseTable(props) {
                         color="primary"
                         onChange={(e) => {
                           e.target.checked
-                            ? setNightsChecked([
-                                ...nightsChecked,
-                                { room: room.num, date }
-                              ])
+                            ? setNightsChecked(
+                                [
+                                  ...nightsChecked,
+                                  { room: room.num, date }
+                                ].sort(dynamicSort('date'))
+                              )
                             : setNightsChecked(
-                                nightsChecked.filter((night) => {
-                                  return !(
-                                    night.room === room.num &&
-                                    night.date === date
-                                  )
-                                })
+                                nightsChecked
+                                  .filter((night) => {
+                                    return !(
+                                      night.room === room.num &&
+                                      night.date === date
+                                    )
+                                  })
+                                  .sort(dynamicSort('date'))
                               )
                         }}
                         inputProps={{ 'aria-label': 'secondary checkbox' }}
@@ -130,7 +149,6 @@ export default function DenseTable(props) {
                     </TableCell>
                   )
                 } else {
-                  //FIXME
                   return (
                     <TableCell align="center">
                       <Checkbox
@@ -149,12 +167,7 @@ export default function DenseTable(props) {
           ))}
         </TableBody>
       </Table>
-      <div className="flex justify-between row">
-        <div className="m-3">
-          <Button variant="contained" color="default">
-            CLEAR ALL
-          </Button>
-        </div>
+      <div className="flex justify-end row">
         <div className="m-3">
           <Button variant="contained" color="primary" onClick={onCreateClick}>
             CREATE ENQUIRY

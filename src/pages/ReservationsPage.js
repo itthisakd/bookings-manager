@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import React from 'react'
-import { css } from '@emotion/react'
-import styled from '@emotion/styled'
-import { useState } from 'react'
-import MenuBar from '../components/MenuBar.js'
+import axios from '../config/axios'
+import { useState, useEffect } from 'react'
+import MenuBar from '../components/shared/MenuBar.js'
 import Container from '@material-ui/core/Container'
-import ReservationsDataGrid from '../components/ReservationsDataGrid'
-import ReservModal from '../components/ReservModal'
+import ReservationsDataGrid from '../components/reservations/ReservationsDataGrid'
+import ReservModal from '../components/reservations/ReservModal'
+// import { useQuery } from 'react-query'
 import { useForm } from 'react-hook-form'
 
 const { DateTime } = require('luxon')
@@ -16,187 +16,32 @@ export default function ReservationsPage() {
   const [open, setOpen] = useState(false)
   const [bookingInfo, setBookingInfo] = useState({})
   const [editRemarks, setEditRemarks] = useState(false)
-  const { handleSubmit, register, getValues } = useForm()
+  const [openConfirmModal, setOpenConfirmModal] = useState(false)
+  const [bookingInfoFrom, setBookingInfoFrom] = useState([])
 
   const handleClose = () => {
     setOpen(false)
     setEditRemarks(false)
+    setOpenConfirmModal(false)
     //clear state
   }
   //––––––––––––––––––––––––––––––––––––––––––––––––
 
-  //TODO –––––––––––––– add GET API method to get all bookingInfo in the format of
-  const bookingInfoFrom = [
-    {
-      id: 999,
-      status: 'booked',
-      createdAt: new Date(2020, 11, 4).toISOString(),
-      updatedAt: null,
-      checkIn: DateTime.now().toString().slice(0, 10),
-      checkOut: new Date(2021, 2, 13).toISOString(),
-      guest: 'Amy Jones',
-      phoneNumber: '0925436174',
-      email: 'yoohoo@yahoo.com',
-      amount: 1245.5,
-      paid: 1,
-      remarks: 'non-smoking',
-      bookedNights: [
-        {
-          reservationId: 999,
-          roomNum: 220,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        },
-        {
-          reservationId: 999,
-          roomNum: 221,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        }
-      ],
-      rooms: [
-        {
-          num: 220,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        },
-        {
-          num: 221,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        }
-      ]
-    },
-    {
-      id: 111,
-      status: 'checkedin',
-      createdAt: new Date(2020, 11, 4).toISOString(),
-      updatedAt: null,
-      checkIn: DateTime.now().toString().slice(0, 10),
-      checkOut: new Date(2021, 2, 13).toISOString(),
-      guest: 'Amy Jones',
-      phoneNumber: '0925436174',
-      email: 'yoohoo@yahoo.com',
-      amount: 1245.5,
-      paid: 1,
-      remarks: 'non-smoking',
-      bookedNights: [
-        {
-          reservationId: 999,
-          roomNum: 220,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        },
-        {
-          reservationId: 999,
-          roomNum: 221,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        }
-      ],
-      rooms: [
-        {
-          num: 220,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        },
-        {
-          num: 221,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        }
-      ]
-    },
-    {
-      id: 112,
-      status: 'checkedin',
-      createdAt: new Date(2020, 11, 4).toISOString(),
-      updatedAt: null,
-      checkIn: new Date(2021, 2, 12).toISOString(),
-      checkOut: DateTime.now().toString().slice(0, 10),
-      guest: 'Amy Jones',
-      phoneNumber: '0925436174',
-      email: 'yoohoo@yahoo.com',
-      amount: 1245.5,
-      paid: 0,
-      remarks: 'non-smoking',
-      bookedNights: [
-        {
-          reservationId: 999,
-          roomNum: 220,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        },
-        {
-          reservationId: 999,
-          roomNum: 221,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        }
-      ],
-      rooms: [
-        {
-          num: 220,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        },
-        {
-          num: 221,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        }
-      ]
-    },
-    {
-      id: 115,
-      status: 'checkedout',
-      createdAt: new Date(2020, 11, 4).toISOString(),
-      updatedAt: null,
-      checkIn: new Date(2020, 11, 4).toISOString(),
-      checkOut: DateTime.now().toString().slice(0, 10),
-      guest: 'Amy Jones',
-      phoneNumber: '0925436174',
-      email: 'yoohoo@yahoo.com',
-      amount: 1245.5,
-      paid: 1,
-      remarks: 'non-smoking',
-      bookedNights: [
-        {
-          reservationId: 999,
-          roomNum: 220,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        },
-        {
-          reservationId: 999,
-          roomNum: 221,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        }
-      ],
-      rooms: [
-        {
-          num: 220,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        },
-        {
-          num: 221,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        }
-      ]
-    }
-  ].filter((booking) => booking.status !== 'enquiry')
-  //––––––––––––––––––––––––––––––––––––––––––––––––
+  const fetchReservations = async () => {
+    const res = await axios.get('/reservations/')
+    setBookingInfoFrom(
+      res.data.result.filter(
+        (booking) =>
+          booking.status === 'booked' ||
+          booking.status === 'modified' ||
+          booking.status === 'cancelled'
+      )
+    )
+  }
+
+  useEffect(() => {
+    fetchReservations()
+  }, [])
 
   //SECTION: states and functions for ReservationsDataGrid
   const accessModal = async (row) => {
@@ -221,7 +66,10 @@ export default function ReservationsPage() {
           className="flex flex-row items-center contents-center justify-around p-0 m-0 w-full"
           disableGutters
         >
-          <ReservationsDataGrid accessModal={accessModal} />
+          <ReservationsDataGrid
+            accessModal={accessModal}
+            bookingInfoFrom={bookingInfoFrom}
+          />
           <ReservModal
             open={open}
             setOpen={setOpen}
@@ -229,10 +77,10 @@ export default function ReservationsPage() {
             bookingInfo={bookingInfo}
             editRemarks={editRemarks}
             setEditRemarks={setEditRemarks}
+            fetchReservations={fetchReservations}
             bookedNightsByResv={bookingInfo.bookedNights}
-            register={register}
-            handleSubmit={handleSubmit}
-            getValues={getValues}
+            setOpenConfirmModal={setOpenConfirmModal}
+            openConfirmModal={openConfirmModal}
           />
         </Container>
       </body>
