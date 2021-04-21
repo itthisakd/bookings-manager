@@ -10,7 +10,9 @@ import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import CheckIcon from '@material-ui/icons/Check'
 import ReservModal from '../reservations/ReservModal'
-const { DateTime, todayDate } = require('luxon')
+import axios from '../../config/axios'
+import Snackbar from '../shared/Snackbar'
+const { DateTime } = require('luxon')
 
 const useStyles = makeStyles({
   table: {
@@ -35,203 +37,51 @@ export default function BasicTable(props) {
   const [statusChange, setStatusChange] = useState({})
   const [open, setOpen] = useState(false)
   const [bookingInfo, setBookingInfo] = useState([])
+  const [editRemarks, setEditRemarks] = useState(false)
   const [bookingInfoById, setBookingInfoById] = useState({})
+  const [openSnackbar, setOpenSnackbar] = useState({
+    open: false
+  })
 
   const handleClose = () => {
     setOpen(false)
     //clear state
   }
 
-  //TODO –––––––––––––– add GET API method to get all bookingInfo in the format of
-  const bookingInfoFrom = [
-    {
-      id: 999,
-      status: 'booked',
-      createdAt: new Date(2020, 11, 4).toISOString(),
-      updatedAt: null,
-      checkIn: DateTime.now().toString().slice(0, 10),
-      checkOut: new Date(2021, 2, 13).toISOString(),
-      guest: 'Amy Jones',
-      phoneNumber: '0925436174',
-      email: 'yoohoo@yahoo.com',
-      amount: 1245.5,
-      paid: 1,
-      remarks: 'non-smoking',
-      bookedNights: [
-        {
-          reservationId: 999,
-          roomNum: 220,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        },
-        {
-          reservationId: 999,
-          roomNum: 221,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        }
-      ],
-      rooms: [
-        {
-          num: 220,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        },
-        {
-          num: 221,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        }
-      ]
-    },
-    {
-      id: 111,
-      status: 'checkedin',
-      createdAt: new Date(2020, 11, 4).toISOString(),
-      updatedAt: null,
-      checkIn: DateTime.now().toString().slice(0, 10),
-      checkOut: new Date(2021, 2, 13).toISOString(),
-      guest: 'Amy Jones',
-      phoneNumber: '0925436174',
-      email: 'yoohoo@yahoo.com',
-      amount: 1245.5,
-      paid: 1,
-      remarks: 'non-smoking',
-      bookedNights: [
-        {
-          reservationId: 999,
-          roomNum: 220,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        },
-        {
-          reservationId: 999,
-          roomNum: 221,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        }
-      ],
-      rooms: [
-        {
-          num: 220,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        },
-        {
-          num: 221,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        }
-      ]
-    },
-    {
-      id: 112,
-      status: 'checkedin',
-      createdAt: new Date(2020, 11, 4).toISOString(),
-      updatedAt: null,
-      checkIn: new Date(2021, 2, 12).toISOString(),
-      checkOut: DateTime.now().toString().slice(0, 10),
-      guest: 'Amy Jones',
-      phoneNumber: '0925436174',
-      email: 'yoohoo@yahoo.com',
-      amount: 1245.5,
-      paid: 0,
-      remarks: 'non-smoking',
-      bookedNights: [
-        {
-          reservationId: 999,
-          roomNum: 220,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        },
-        {
-          reservationId: 999,
-          roomNum: 221,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        }
-      ],
-      rooms: [
-        {
-          num: 220,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        },
-        {
-          num: 221,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        }
-      ]
-    },
-    {
-      id: 115,
-      status: 'checkedout',
-      createdAt: new Date(2020, 11, 4).toISOString(),
-      updatedAt: null,
-      checkIn: new Date(2020, 11, 4).toISOString(),
-      checkOut: DateTime.now().toString().slice(0, 10),
-      guest: 'Amy Jones',
-      phoneNumber: '0925436174',
-      email: 'yoohoo@yahoo.com',
-      amount: 1245.5,
-      paid: 1,
-      remarks: 'non-smoking',
-      bookedNights: [
-        {
-          reservationId: 999,
-          roomNum: 220,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        },
-        {
-          reservationId: 999,
-          roomNum: 221,
-          nightlyDate: new Date(2021, 2, 12).toISOString()
-        }
-      ],
-      rooms: [
-        {
-          num: 220,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        },
-        {
-          num: 221,
-          type: 'Deluxe',
-          inDate: new Date(2021, 2, 12).toISOString(),
-          outDate: new Date(2021, 2, 13).toISOString(),
-          rate: 1500
-        }
-      ]
-    }
-  ]
+  const fetchReservations = async () => {
+    const res = await axios.get('/reservations/')
+    setBookingInfo(res.data.result)
+  }
 
   useEffect(() => {
-    setBookingInfo(bookingInfoFrom)
+    fetchReservations()
   }, [])
 
-  //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-
-  useEffect(() => {
-    //TODO –––––––––––––– PATCH API method and then clear statusChange
-  }, [statusChange])
-
-  const accessModal = async (booking) => {
-    //then set reservation by id, and set state of bookingInfo with info from reservation
-    await setBookingInfoById(
-      bookingInfo.filter((res) => res.id == booking.id)[0]
-    )
-    // then opne modal and display modal with the state
-    setOpen(true)
+  const handleStatusChange = async (bkInfo) => {
+    await axios.patch('/reservations/', {
+      id: bkInfo.id,
+      paid: 1,
+      status: bkInfo.status === 'checkedin' ? 'checkedout' : 'checkedin'
+    })
+    fetchReservations().then(() => {
+      setOpenSnackbar({
+        open: true,
+        status: 'success',
+        message: `${
+          bkInfo.status === 'checkedin' ? 'Checked-out' : 'Checked-in'
+        } successfully!`
+      })
+    })
   }
+
+  // const accessModal = async (booking) => {
+  //   //then set reservation by id, and set state of bookingInfo with info from reservation
+  //   await setBookingInfoById(
+  //     bookingInfo.filter((res) => res.id == booking.id)[0]
+  //   )
+  //   // then opne modal and display modal with the state
+  //   setOpen(true)
+  // }
 
   if (check === 'in')
     return (
@@ -242,7 +92,17 @@ export default function BasicTable(props) {
           setOpen={setOpen}
           handleClose={handleClose}
           bookingInfo={bookingInfoById}
+          editRemarks={editRemarks}
+          setEditRemarks={setEditRemarks}
+          fetchReservations={fetchReservations}
           bookedNightsByResv={bookingInfo.bookedNights}
+        />
+
+        <Snackbar
+          status={openSnackbar.status}
+          message={openSnackbar.message}
+          open={openSnackbar.open}
+          setOpen={setOpenSnackbar}
         />
         <TableContainer component={Paper}>
           <Table className={classes.table}>
@@ -254,7 +114,6 @@ export default function BasicTable(props) {
                 <TableCell>Rooms</TableCell>
                 <TableCell>Remarks</TableCell>
                 <TableCell align="right">Amount</TableCell>
-
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -262,8 +121,9 @@ export default function BasicTable(props) {
               {bookingInfo
                 .filter(
                   (booking) =>
-                    (booking.status !== 'enquiry' ||
-                      booking.status !== 'cancelled') &&
+                    booking.status !== 'enquiry' &&
+                    booking.status !== 'cancelled' &&
+                    booking.status !== 'uncompleted' &&
                     booking.checkIn === date
                 )
                 .map((booking, idx, arr) => (
@@ -304,7 +164,7 @@ export default function BasicTable(props) {
                           : null
                       }
                     >
-                      {booking.amount.toFixed(2)}
+                      {Number(booking.amount).toFixed(2)}
                     </TableCell>
                     <TableCell>
                       {booking.status === 'booked' ||
@@ -315,13 +175,7 @@ export default function BasicTable(props) {
                           size="small"
                           startIcon={<CheckIcon />}
                           onClick={() => {
-                            //REVIEW this part once backend connected
-                            setStatusChange({
-                              id: booking.id,
-                              status: 'checkedin',
-                              paid: 1
-                            })
-                            setBookingInfo(array_move(arr, arr[idx], arr[-1]))
+                            handleStatusChange(booking)
                           }}
                         ></Button>
                       ) : booking.status === 'checkedin' ? (
@@ -347,6 +201,12 @@ export default function BasicTable(props) {
           handleClose={handleClose}
           bookingInfo={bookingInfoById}
           bookedNightsByResv={bookingInfo.bookedNights}
+        />
+        <Snackbar
+          status={openSnackbar.status}
+          message={openSnackbar.message}
+          open={openSnackbar.open}
+          setOpen={setOpenSnackbar}
         />
         <TableContainer component={Paper}>
           <Table className={classes.table}>
@@ -395,13 +255,7 @@ export default function BasicTable(props) {
                           color="primary"
                           size="small"
                           onClick={() => {
-                            //REVIEW this part once backend connected
-                            setStatusChange({
-                              id: booking.id,
-                              status: 'checkedin',
-                              paid: 1
-                            })
-                            setBookingInfo(array_move(arr, arr[idx], arr[-1]))
+                            handleStatusChange(booking)
                           }}
                           startIcon={<CheckIcon />}
                         ></Button>

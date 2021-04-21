@@ -37,6 +37,12 @@ function dynamicSort(property) {
 export default function DenseTable(props) {
   const { nightsObj, nightsChecked, setNightsChecked, onCreateClick } = props
   const classes = useStyles()
+  const [bookedNights, setBookedNights] = useState({
+    '2021-04-10': [112],
+    '2021-04-11': [112, 211],
+    '2021-04-15': [212],
+    '2021-03-12': [212]
+  })
 
   //–––––––––––––––DATA REQUIRED––––––––––––––––––
 
@@ -67,27 +73,16 @@ export default function DenseTable(props) {
     }
   ]
 
-  //from this
-  // const bookedNights = [
-  //   {
-  //     reservationId: 999
-  //     room_id: 220,
-  //     nightlyDate: new Date(2021, 2, 12).toISOString(),
-  //   },
-  // {
-  //     reservationId: 999
-  //     room_id: 221,
-  //     nightlyDate: new Date(2021, 2, 12).toISOString(),
-  //   },
-  // ]
+  // const fetchBookedNights = async () => {
+  //   const res = await axios.get('/reservations/')
+  //   setBookingInfoFrom(
+  //     res.data.result.filter((booking) => booking.status === 'enquiry')
+  //   )
+  // }
 
-  //to this
-  const bookedNights = {
-    '2021-04-10': [112],
-    '2021-04-11': [112, 211],
-    '2021-04-15': [212],
-    '2021-03-12': [212]
-  }
+  // useEffect(() => {
+  //   fetchBookedNights()
+  // }, [])
 
   //–––––––––––––––––––––––––––––––––––––––––––––––
 
@@ -108,7 +103,7 @@ export default function DenseTable(props) {
         </TableHead>
         <TableBody>
           {roomNo.map((room) => (
-            <TableRow hover="true">
+            <TableRow hover key={room.num}>
               <TableCell component="th" scope="row">
                 {room.num}
               </TableCell>

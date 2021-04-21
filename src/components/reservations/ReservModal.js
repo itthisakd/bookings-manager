@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Modal from '@material-ui/core/Modal'
@@ -134,17 +134,24 @@ export default function SpringModal(props) {
     setEditRemarks,
     bookedNightsByResv,
     today,
+    accessModal,
     openConfirmModal,
     fetchReservations,
     setOpenConfirmModal
   } = props
   const [remarks, setRemarks] = useState('')
-  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [openSnackbar, setOpenSnackbar] = useState({
+    open: false
+  })
 
   const handleConfirmClick = async () => {
+    console.log({
+      id: bookingInfo.id,
+      status: 'cancelled'
+    })
     await axios.patch('/reservations/', {
       id: bookingInfo.id,
-      booking_status_id: 3
+      status: 'cancelled'
     })
     setOpen(false)
     setOpenConfirmModal(false)
@@ -157,7 +164,9 @@ export default function SpringModal(props) {
     })
   }
 
-  const handleSubmitRemarks = async () => {
+  const handleSubmitRemarks = async (e) => {
+    e.preventDefault()
+    handleClose()
     await axios.patch('/reservations/', {
       id: bookingInfo.id,
       remarks: remarks
@@ -380,30 +389,34 @@ export default function SpringModal(props) {
                 </Grid>
               </Grid>
             </div>
-            {!today && bookingInfo.status === 'cancelled' && (
-              <div className="w-full p-0 flex row align-center justify-end">
-                <Button
-                  variant="contained"
-                  color="default"
-                  size="small"
-                  startIcon={<ClearIcon />}
-                  onClick={() => {
-                    setOpenConfirmModal(true)
-                  }}
-                  type="submit"
-                  size="small"
-                  style={{ margin: '0 5px' }}
-                >
-                  CANCEL BOOKING
-                </Button>
-                <ConfirmModal
-                  open={openConfirmModal}
-                  setOpenConfirmModal={setOpenConfirmModal}
-                  handleConfirmClick={handleConfirmClick}
-                  confirmMessage={`You are cancelling this reservation ID: ${bookingInfo.id}, Guest: ${bookingInfo.guest}.`}
-                  confirmTitle={'Cancel this reservation...'}
-                />
-              </div>
+            {bookingInfo.status !== 'cancelled' && (
+              <>
+                {!today && (
+                  <div className="w-full p-0 flex row align-center justify-end">
+                    <Button
+                      variant="contained"
+                      color="default"
+                      size="small"
+                      startIcon={<ClearIcon />}
+                      onClick={() => {
+                        setOpenConfirmModal(true)
+                      }}
+                      type="submit"
+                      size="small"
+                      style={{ margin: '0 5px' }}
+                    >
+                      CANCEL BOOKING
+                    </Button>
+                    <ConfirmModal
+                      open={openConfirmModal}
+                      setOpenConfirmModal={setOpenConfirmModal}
+                      handleConfirmClick={handleConfirmClick}
+                      confirmMessage={`You are cancelling this reservation ID: ${bookingInfo.id}, Guest: ${bookingInfo.guest}.`}
+                      confirmTitle={'Cancel this reservation...'}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </div>
         </Fade>

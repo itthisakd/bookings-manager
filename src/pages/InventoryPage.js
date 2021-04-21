@@ -3,7 +3,6 @@ import { css } from '@emotion/react'
 import styled from '@emotion/styled'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-// import PostForm from "../components/PostForm.js";
 import React from 'react'
 import MenuBar from '../components/shared/MenuBar.js'
 import Button from '@material-ui/core/Button'

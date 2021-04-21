@@ -19,6 +19,7 @@ import ClearIcon from '@material-ui/icons/Clear'
 import CheckIcon from '@material-ui/icons/Check'
 import { useForm } from 'react-hook-form'
 import ConfirmModal from '../shared/ConfirmModal'
+import axios from '../../config/axios'
 
 const { DateTime } = require('luxon')
 
@@ -137,27 +138,46 @@ export default function SpringModal(props) {
     handleClose,
     bookingInfo,
     editRemarks,
+    fetchReservations,
     setEditRemarks,
     openConfirmModal,
     setOpenConfirmModal
   } = props
   const { handleSubmit, register } = useForm()
-  const [enquiryToDelete, setEnquiryToDelete] = useState({})
+  const [openSnackbar, setOpenSnackbar] = useState({
+    open: false
+  })
 
-  const handleConfirmClick = () => {
-    //TODO –––––––––––– PATCH API method to change status
+  const handleConfirmBookClick = async () => {
+    await axios.patch('/reservations/', {
+      id: bookingInfo.id,
+      status: 'booked'
+    })
+    setOpen(false)
     setOpenConfirmModal(false)
+    fetchReservations().then(() => {
+      setOpenSnackbar({
+        open: true,
+        status: 'success',
+        message: 'Reservation booked successfully!'
+      })
+    })
   }
 
-  const handleEditRemarksDone = () => {
-    //TODO ––––––––––––––patch API method to change the remarks of the bookign
-    setEditRemarks(false)
-  }
-
-  const handleCancelBooking = () => {
-    setOpenConfirmModal(true)
-    console.log('enquiryToDelete :>> ', enquiryToDelete)
-    //TODO ––––––––––––patch API method to change booking status to CANCELLED
+  const handleConfirmDeleteClick = async () => {
+    await axios.patch('/reservations/', {
+      id: bookingInfo.id,
+      status: 'uncompleted'
+    })
+    setOpen(false)
+    setOpenConfirmModal(false)
+    fetchReservations().then(() => {
+      setOpenSnackbar({
+        open: true,
+        status: 'success',
+        message: 'Enquiry deleted successfully'
+      })
+    })
   }
 
   return (
@@ -231,7 +251,7 @@ export default function SpringModal(props) {
             </Container>
             <form
               onSubmit={handleSubmit((data) => {
-                console.log(data)
+                console.log('data', data)
               })}
             >
               <Grid container>
@@ -253,12 +273,12 @@ export default function SpringModal(props) {
                             <TableCell>{row.num}</TableCell>
                             <TableCell>{row.type}</TableCell>
                             <TableCell>
-                              {DateTime.fromISO(row.inDate).toFormat(
+                              {DateTime.fromISO(row.checkIn).toFormat(
                                 'dd LLL yyyy'
                               )}
                             </TableCell>
                             <TableCell>
-                              {DateTime.fromISO(row.outDate).toFormat(
+                              {DateTime.fromISO(row.checkIn).toFormat(
                                 'dd LLL yyyy'
                               )}
                             </TableCell>
@@ -282,11 +302,10 @@ export default function SpringModal(props) {
                 </Grid>
                 <Grid item xs={4} className={classes.value}>
                   <TextField
-                    {...register('mobile')}
-                    name="mobile"
+                    {...register('phone_number')}
+                    name="phone_number"
                     variant="outlined"
                     size="small"
-                    // style={{ width: '500px' }}
                   />
                 </Grid>
                 <Grid item xs={3} className={classes.value}>
@@ -299,7 +318,8 @@ export default function SpringModal(props) {
                       className={classes.input}
                       id="contained-button-file"
                       type="file"
-                      {...register('paymentSlip')}
+                      {...register('payment_slip')}
+                      name="payment_slip"
                     />
                     <label htmlFor="contained-button-file">
                       <Button
@@ -348,7 +368,9 @@ export default function SpringModal(props) {
                   color="default"
                   size="small"
                   startIcon={<ClearIcon />}
-                  onClick={handleCancelBooking}
+                  onClick={() => {
+                    setOpenConfirmModal(true)
+                  }}
                   //TODO ask "Confirm delete enquiry?"
                   size="small"
                   style={{ margin: '0 5px' }}
@@ -358,12 +380,9 @@ export default function SpringModal(props) {
                 <ConfirmModal
                   open={openConfirmModal}
                   setOpenConfirmModal={setOpenConfirmModal}
-                  handleConfirmClick={handleConfirmClick}
+                  handleConfirmClick={handleConfirmDeleteClick}
                   confirmMessage={`You are cancelling this reservation ID: ${bookingInfo.id}, Guest: ${bookingInfo.guest}.`}
                   confirmTitle={'Cancel this reservation...'}
-                  handleConfirmClick={() => {
-                    setEnquiryToDelete({ id: bookingInfo.id })
-                  }}
                 />
                 <Button
                   variant="contained"

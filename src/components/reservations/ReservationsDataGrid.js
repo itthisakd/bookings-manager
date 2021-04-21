@@ -27,6 +27,13 @@ const columns = [
     sortable: true,
     width: 150
   },
+  {
+    field: 'nights',
+    headerName: 'Nights',
+    type: 'date',
+    sortable: true,
+    width: 100
+  },
   { field: 'guest', headerName: 'Guest', sortable: true, width: 150 },
 
   { field: 'amount', headerName: 'Amount', type: 'number', width: 130 },
@@ -53,7 +60,11 @@ export default function DataGridDemo(props) {
       checkOut: DateTime.fromISO(booking.checkOut).toFormat('dd LLL yyyy'),
       guest: booking.guest,
       amount: Number(booking.amount).toFixed(2),
-      remarks: booking.remarks
+      remarks: booking.remarks,
+      nights: DateTime.fromISO(booking.checkOut).diff(
+        DateTime.fromISO(booking.checkIn),
+        'days'
+      ).days
     }
   })
 

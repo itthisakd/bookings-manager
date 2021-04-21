@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import MenuBar from '../components/shared/MenuBar.js'
 import React from 'react'
 import TextField from '@material-ui/core/TextField'
@@ -6,12 +6,12 @@ import Container from '@material-ui/core/Container'
 import Button from '@material-ui/core/Button'
 import VacancyTable from '../components/addbooking/VacancyTable'
 import { makeStyles } from '@material-ui/core/styles'
-import InputBox from '../components/InputBox'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Snackbar from '../components/shared/Snackbar'
 import * as yup from 'yup'
 import axios from '../config/axios'
+import { useHistory } from 'react-router-dom'
 
 const { DateTime } = require('luxon')
 
@@ -47,10 +47,7 @@ const nightsGenerator = (inDD, outDD) => {
 }
 
 const schema = yup.object().shape({
-  guest: yup
-    .string()
-    .matches(/^[a-zA-z ]$/g, 'Guest name must be alphabetical')
-    .required('Guest Name is required.'),
+  guest: yup.string().required('Guest Name is required.'),
   checkIn: yup.date().required('Check-in Date is required.'),
   checkOut: yup.date().required('Check-in Date is required.')
 })
@@ -64,41 +61,51 @@ export default function AddBookingPage() {
   const [nightsChecked, setNightsChecked] = useState([])
   const [details, setDetails] = useState({})
   const [openSnackbar, setOpenSnackbar] = useState(false)
+  const history = useHistory()
 
   const {
     handleSubmit,
     register,
     formState: { errors }
   } = useForm({
-    resolver: yupResolver(schema),
-    mode: 'onBlur'
+    mode: 'onBlur',
+    resolver: yupResolver(schema)
   })
 
   const onFindClick = () => {
     if (dateIn && dateOut) {
       setNightsObj(nightsGenerator(dateIn, dateOut))
       setFound(true)
-      console.log('Clicked')
     }
   }
 
   const onSubmit = (data) => {
-    console.log('data :>> ', data)
     setDetails(data)
   }
 
   const onCreateClick = async () => {
     if (nightsChecked) {
-      await axios.create('/reservations/', {
-        guest: details.guest,
-        checkIn: nightsChecked[0].date,
-        checkOut: DateTime.fromISO(nightsChecked[nightsChecked.length - 1].date)
-          .plus({ days: 1 })
-          .toString()
-          .slice(0, 10),
-        nightsChecked
-      })
-      setOpenSnackbar(true)
+      await axios
+        .post('/reservations/', {
+          guest: details.guest,
+          status: 'enquiry',
+          staff_id: 1,
+          checkIn: nightsChecked[0].date,
+          checkOut: DateTime.fromISO(
+            nightsChecked[nightsChecked.length - 1].date
+          )
+            .plus({ days: 1 })
+            .toString()
+            .slice(0, 10),
+          nightsChecked: nightsChecked
+        })
+        .then(() => {
+          setOpenSnackbar({
+            open: true,
+            status: 'success',
+            message: 'Enquiry created successfully!'
+          })
+        })
     }
   }
 
@@ -124,6 +131,7 @@ export default function AddBookingPage() {
         message="Enquiry created successfully!"
         open={openSnackbar}
         setOpen={setOpenSnackbar}
+        redirect={() => history.push('/enquiry')}
       />
       <Container
         name="reservations"
@@ -136,13 +144,14 @@ export default function AddBookingPage() {
           autoComplete="off"
         >
           <div className="mx-3">
-            <InputBox
+            <TextField
+              type="text"
               required
               {...register('guest')}
               label="Guest"
               name="guest"
-              error={!!errors?.username}
-              helperText={errors?.username?.message}
+              error={!!errors?.guest}
+              helperText={errors?.guest?.message}
             />
           </div>
           <div className="mx-3">
@@ -169,6 +178,8 @@ export default function AddBookingPage() {
               InputLabelProps={{
                 shrink: true
               }}
+              error={!!errors?.checkIn}
+              helperText={errors?.checkIn?.message}
             />
           </div>
           <div className="mx-3">
@@ -193,6 +204,8 @@ export default function AddBookingPage() {
                     min: DateTime.fromISO(dateIn).plus({ days: 1 }).toISODate()
                   }
                 }}
+                error={!!errors?.checkOut}
+                helperText={errors?.checkOut?.message}
               />
             ) : (
               <TextField

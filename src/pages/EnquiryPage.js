@@ -19,10 +19,8 @@ export default function EnquiryPage() {
     setOpen(false)
     setEditRemarks(false)
     setOpenConfirmModal(false)
-
     //clear state
   }
-  //––––––––––––––––––––––––––––––––––––––––––––––––
 
   const fetchReservations = async () => {
     const res = await axios.get('/reservations/')
@@ -35,17 +33,12 @@ export default function EnquiryPage() {
     fetchReservations()
   }, [])
 
-  //SECTION: states and functions for ReservationsDataGrid
   const accessModal = async (row) => {
-    console.log('row.id :>> ', row.id)
-    //then set reservation by id, and set state of bookingInfo with info from reservation
     await setBookingInfo(
-      bookingInfoFrom.filter((booking) => booking.id == row.id)[0]
+      bookingInfoFrom.filter((booking) => booking.id === row.id)[0]
     )
-    // then opne modal and display modal with the state
     setOpen(true)
   }
-  //––––––––––––––––––––––––––––––––––––––––––––––––
 
   return (
     <div>
@@ -67,6 +60,7 @@ export default function EnquiryPage() {
             setOpen={setOpen}
             handleClose={handleClose}
             bookingInfo={bookingInfo}
+            fetchReservations={fetchReservations}
             editRemarks={editRemarks}
             setEditRemarks={setEditRemarks}
             setOpenConfirmModal={setOpenConfirmModal}

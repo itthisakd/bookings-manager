@@ -25,6 +25,13 @@ const columns = [
     sortable: true,
     width: 150
   },
+  {
+    field: 'nights',
+    headerName: 'Nights',
+    type: 'date',
+    sortable: true,
+    width: 100
+  },
   { field: 'guest', headerName: 'Guest', sortable: true, width: 150 },
   { field: 'amount', headerName: 'Amount', type: 'number', width: 130 },
   { field: 'type', headerName: 'Type', width: 300 }
@@ -45,41 +52,36 @@ const columns = [
 export default function DataGridDemo(props) {
   const { accessModal, bookingInfoFrom } = props
 
-  const rows = bookingInfoFrom
-    .filter((booking) => booking.status === 'enquiry')
-    .map((booking) => {
-      console.log(
+  const rows = bookingInfoFrom.map((booking) => {
+    return {
+      id: booking.id,
+      status: booking.status.toUpperCase(),
+      createdAt: DateTime.fromISO(booking.createdAt).toFormat('dd LLL yyyy'),
+      checkIn: DateTime.fromISO(booking.checkIn).toFormat('dd LLL yyyy'),
+      checkOut: DateTime.fromISO(booking.checkOut).toFormat('dd LLL yyyy'),
+      guest: booking.guest,
+      amount: Number(booking.amount).toFixed(2),
+      type: Object.entries(
         booking.rooms
           .map((room) => room.type)
-          .filter((v, i, a) => a.indexOf(v) === i)
-          .join(', ')
-          .slice(0, -2)
-      )
-      return {
-        id: booking.id,
-        status: booking.status.toUpperCase(),
-        createdAt: DateTime.fromISO(booking.createdAt).toFormat('dd LLL yyyy'),
-        checkIn: DateTime.fromISO(booking.checkIn).toFormat('dd LLL yyyy'),
-        checkOut: DateTime.fromISO(booking.checkOut).toFormat('dd LLL yyyy'),
-        guest: booking.guest,
-        amount: booking.amount.toFixed(2),
-        type: Object.entries(
-          booking.rooms
-            .map((room) => room.type)
-            .reduce(function (acc, curr) {
-              if (typeof acc[curr] == 'undefined') {
-                acc[curr] = 1
-              } else {
-                acc[curr] += 1
-              }
+          .reduce(function (acc, curr) {
+            if (typeof acc[curr] == 'undefined') {
+              acc[curr] = 1
+            } else {
+              acc[curr] += 1
+            }
 
-              return acc
-            }, {})
-        )
-          .map((item) => item.join(' x'))
-          .join(', ')
-      }
-    })
+            return acc
+          }, {})
+      )
+        .map((item) => item.join(' x'))
+        .join(', '),
+      nights: DateTime.fromISO(booking.checkOut).diff(
+        DateTime.fromISO(booking.checkIn),
+        'days'
+      ).days
+    }
+  })
 
   return (
     <div style={{ height: '100vh', width: '100%' }}>

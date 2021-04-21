@@ -1,13 +1,7 @@
-/** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
-import styled from '@emotion/styled'
 import { useState } from 'react'
-import { useHistory } from 'react-router-dom'
-// import PostForm from "../components/PostForm.js";
 import React from 'react'
 import MenuBar from '../components/shared/MenuBar.js'
 import { makeStyles } from '@material-ui/core/styles'
-import Container from '@material-ui/core/Container'
 import TodayDataGrid from '../components/today/TodayDataGrid'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
@@ -48,8 +42,8 @@ export default function TodayPage() {
             setDate(e.target.value)
           }}
         />
-        <div className="w-11/12">
-          <div className="inline-block w-1/2 h-screen p-0 m-0">
+        <div className="w-11/12 flex flex-row items-top justify-center">
+          <div className="inline-block w-1/2 h-screen p-0 m-0 flex flex-col items-top justify-center">
             <Typography
               variant="h5"
               component="h2"
@@ -59,7 +53,7 @@ export default function TodayPage() {
             </Typography>
             <TodayDataGrid check="in" date={date} />
           </div>
-          <div className="inline-block w-1/2 h-screen p-0 m-0">
+          <div className="inline-block w-1/2 h-screen p-0 m-0 flex flex-col items-top justify-center">
             <Typography
               variant="h5"
               component="h2"
