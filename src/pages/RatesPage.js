@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import React from 'react'
 import MenuBar from '../components/shared/MenuBar.js'
@@ -15,53 +15,49 @@ import Button from '@material-ui/core/Button'
 import EditIcon from '@material-ui/icons/Edit'
 import SaveAltIcon from '@material-ui/icons/SaveAlt'
 import TextField from '@material-ui/core/TextField'
+import axios from '../config/axios'
 
 export default function RatesPage() {
-  //TODO –––––––––––––– GET API method to get following data
-  const roomTypes = {
-    types: [
-      {
-        id: 1,
-        name: 'Standard',
-        rate: 1000
-      },
-      {
-        id: 2,
-        name: 'Superior',
-        rate: 1500
-      },
-      {
-        id: 3,
-        name: 'Deluxe',
-        rate: 2000
-      }
-    ]
-  }
-  //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-
-  const preloadedRates = Object.fromEntries(
-    roomTypes.types.map((type) => [type.id, type.rate])
-  )
-
+  const [roomTypes, setRoomTypes] = useState([])
   const [editMode, setEditMode] = useState(false)
-  const { register, handleSubmit, getValues, errors } = useForm()
-  //FIXME ––––––––––––––––––– BUG: data entered not set into data of useForm
-  // problem seems to be that the input vale cant override default value
+  const { register, handleSubmit, getValues, errors, reset } = useForm()
+
+  const fetchRates = async () => {
+    const res = await axios.get('/rates/')
+    setRoomTypes(res.data.roomTypes)
+  }
+
+  useEffect(() => {
+    fetchRates()
+  }, [])
 
   const handleEditClick = () => {
     setEditMode(true)
   }
 
-  const onSubmit = (data) => {
-    console.log(getValues())
-    //TODO POST API method
+  // const handleRateUpdates = () => {
+  //   const newRates = {...getValues()}
+  //   const updatedRates = roomTypes?.map((type) => {
+  //     return { ...type, rates: newRates.id }
+  //   })
+  //   await axios.put('/rates/', { updatedRates })
+  //   fetchRates()
+  //   e.target.reset()
+  //   setEditMode(false)
+  // }
+
+  const onSubmit = async (data, e) => {
+    const newRates = { ...data }
+    reset()
+    console.log({ ...data })
+    const updatedRates = roomTypes?.map((type) => {
+      return { id: type.id, name: type.name, rate: Number(newRates[type.id]) }
+    })
+    await axios.put('/rates/', { updatedRates })
+    fetchRates()
     setEditMode(false)
+    // window.location.reload()
   }
-
-  //TODO ––––––––––––––––– POST API method to update with data below
-  const data = getValues()
-
-  //TODO ––––––––––––––––– add loading & sucess
 
   return (
     <div>
@@ -122,13 +118,14 @@ export default function RatesPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {roomTypes.types.map((type) => {
-                  const typeId = type.id
+                {console.log(roomTypes)}
+                {roomTypes?.map((type) => {
                   return editMode ? (
                     <TableRow>
                       <TableCell>{type.name}</TableCell>
                       <TableCell>
                         <TextField
+                          required
                           {...register(`${type.id}`)}
                           key={type.id}
                           name={type.id}

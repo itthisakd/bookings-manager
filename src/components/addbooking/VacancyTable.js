@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -9,6 +9,8 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Checkbox from '@material-ui/core/Checkbox'
 import Button from '@material-ui/core/Button'
+import axios from '../../config/axios'
+import dynamicSort from '../../utilities/dynamicSort'
 
 const { DateTime } = require('luxon')
 
@@ -18,73 +20,21 @@ const useStyles = makeStyles({
   }
 })
 
-function dynamicSort(property) {
-  var sortOrder = 1
-  if (property[0] === '-') {
-    sortOrder = -1
-    property = property.substr(1)
-  }
-  return function (a, b) {
-    /* next line works with strings and numbers,
-     * and you may want to customize it to your needs
-     */
-    var result =
-      a[property] < b[property] ? -1 : a[property] > b[property] ? 1 : 0
-    return result * sortOrder
-  }
-}
-
 export default function DenseTable(props) {
   const { nightsObj, nightsChecked, setNightsChecked, onCreateClick } = props
   const classes = useStyles()
-  const [bookedNights, setBookedNights] = useState({
-    '2021-04-10': [112],
-    '2021-04-11': [112, 211],
-    '2021-04-15': [212],
-    '2021-03-12': [212]
-  })
+  const [bookedNights, setBookedNights] = useState({})
+  const [roomNo, setRoomNo] = useState([])
 
-  //–––––––––––––––DATA REQUIRED––––––––––––––––––
+  const fetchVacancy = async () => {
+    const res = await axios.get('/reservations/vacancy')
+    setBookedNights(res.data.bookedNights)
+    setRoomNo(res.data.rooms)
+  }
 
-  const roomNo = [
-    {
-      num: 110,
-      type: 'Standard'
-    },
-    {
-      num: 111,
-      type: 'Standard'
-    },
-    {
-      num: 112,
-      type: 'Standard'
-    },
-    {
-      num: 210,
-      type: 'Superior'
-    },
-    {
-      num: 211,
-      type: 'Superior'
-    },
-    {
-      num: 212,
-      type: 'Superior'
-    }
-  ]
-
-  // const fetchBookedNights = async () => {
-  //   const res = await axios.get('/reservations/')
-  //   setBookingInfoFrom(
-  //     res.data.result.filter((booking) => booking.status === 'enquiry')
-  //   )
-  // }
-
-  // useEffect(() => {
-  //   fetchBookedNights()
-  // }, [])
-
-  //–––––––––––––––––––––––––––––––––––––––––––––––
+  useEffect(() => {
+    fetchVacancy()
+  }, [])
 
   return (
     <TableContainer component={Paper}>
@@ -93,6 +43,7 @@ export default function DenseTable(props) {
           <TableRow>
             <TableCell>Room No.</TableCell>
             <TableCell>Type</TableCell>
+            <TableCell>Rate</TableCell>
             {nightsObj.datesReformatted.map((date) => (
               <TableCell align="center">
                 <div>{date[0]}</div>
@@ -106,6 +57,9 @@ export default function DenseTable(props) {
             <TableRow hover key={room.num}>
               <TableCell component="th" scope="row">
                 {room.num}
+              </TableCell>
+              <TableCell component="th" scope="row">
+                {room.rate}
               </TableCell>
               <TableCell>{room.type}</TableCell>
 
@@ -184,56 +138,3 @@ const data = {
     { room: 111, date: '2021-04-21' }
   ]
 }
-
-//REVIEW THIS ADDITION LATER, omit with chnage of plans and decide not to do
-// addition:
-// else if (modify === 'true') {
-//                   bookedNightsByResv?.map((night) => {
-//                     if (
-//                       night.roomId === room.num &&
-//                       night.nightlyDate === date
-//                     ) {
-//                       return (
-//                         <TableCell align="center">
-//                           //FIXME
-//                           <Checkbox
-//                             checked
-//                             room={room.num}
-//                             date={date}
-//                             color="primary"
-//                             onChange={(e) => {
-//                               e.target.checked
-//                                 ? setNightsChecked([
-//                                     ...nightsChecked,
-//                                     { room: room.num, date }
-//                                   ])
-//                                 : setNightsChecked(
-//                                     nightsChecked.filter((night) => {
-//                                       return !(
-//                                         night.room === room.num &&
-//                                         night.date === date
-//                                       )
-//                                     })
-//                                   )
-//                             }}
-//                             inputProps={{ 'aria-label': 'secondary checkbox' }}
-//                           />
-//                         </TableCell>
-//                       )
-//                       //FIXME
-//                     } else {
-//                       return (
-//                         <TableCell align="center">
-//                           <Checkbox
-//                             disabled
-//                             checked
-//                             room={room.num}
-//                             date={date}
-//                             color="primary"
-//                             inputProps={{ 'aria-label': 'secondary checkbox' }}
-//                           />
-//                         </TableCell>
-//                       )
-//                     }
-//                   })
-//                 }

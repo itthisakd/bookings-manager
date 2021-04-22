@@ -20,6 +20,8 @@ import CheckIcon from '@material-ui/icons/Check'
 import { useForm } from 'react-hook-form'
 import ConfirmModal from '../shared/ConfirmModal'
 import axios from '../../config/axios'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 
 const { DateTime } = require('luxon')
 
@@ -108,53 +110,53 @@ Fade.propTypes = {
   onExited: PropTypes.func
 }
 
-const nightsGenerator = (inDD, outDD) => {
-  const inD = DateTime.fromISO(inDD)
-  const outD = DateTime.fromISO(outDD)
-  const nights = outD.diff(inD, 'days').toObject().days
-  let datesISO = []
-  let i = 0
-  let tempDate = inD
-  while (datesISO.length !== nights) {
-    datesISO.push(tempDate.plus({ days: i++ }).toISODate())
-  }
-  const datesReformatted = datesISO.map((night) => {
-    let temp = DateTime.fromISO(night)
-      .toLocaleString(DateTime.DATE_MED)
-      .toUpperCase()
-      .split(',')
-      .map((item) => item.split(' '))
-    return temp[0]
-  })
-  return { nights, datesISO, datesReformatted }
-}
+const schema = yup.object().shape({
+  email: yup
+    .string()
+    .matches(
+      /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
+      'Email in incorrect format'
+    ),
+  phone_number: yup
+    .string()
+    .required('Phone number is required')
+    .matches(/0[0-9]{9}/, 'Phone number in incorrect format.'),
+  remarks: yup.string()
+})
 
-export default function SpringModal(props) {
+export default function SpringModal({
+  open,
+  setOpen,
+  handleOpen,
+  handleClose,
+  bookingInfo,
+  editRemarks,
+  fetchReservations,
+  setEditRemarks,
+  openConfirmModal,
+  setOpenConfirmModal
+}) {
   const classes = useStyles()
   const {
-    open,
-    setOpen,
-    handleOpen,
-    handleClose,
-    bookingInfo,
-    editRemarks,
-    fetchReservations,
-    setEditRemarks,
-    openConfirmModal,
-    setOpenConfirmModal
-  } = props
-  const { handleSubmit, register } = useForm()
-  const [openSnackbar, setOpenSnackbar] = useState({
-    open: false
+    handleSubmit,
+    register,
+    formState: { errors }
+  } = useForm({
+    mode: 'onBlur',
+    resolver: yupResolver(schema)
   })
+  const [paymentSlip, setPaymentSlip] = useState('')
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [openConfirmBookModal, setOpenConfirmBookModal] = useState(false)
 
   const handleConfirmBookClick = async () => {
     await axios.patch('/reservations/', {
       id: bookingInfo.id,
-      status: 'booked'
+      status: 'booked',
+      paid: paymentSlip ? 1 : 0
     })
     setOpen(false)
-    setOpenConfirmModal(false)
+    setOpenConfirmBookModal(false)
     fetchReservations().then(() => {
       setOpenSnackbar({
         open: true,
@@ -165,10 +167,7 @@ export default function SpringModal(props) {
   }
 
   const handleConfirmDeleteClick = async () => {
-    await axios.patch('/reservations/', {
-      id: bookingInfo.id,
-      status: 'uncompleted'
-    })
+    await axios.delete(`/reservations/enquiry/${bookingInfo.id}`)
     setOpen(false)
     setOpenConfirmModal(false)
     fetchReservations().then(() => {
@@ -250,9 +249,13 @@ export default function SpringModal(props) {
               </div>
             </Container>
             <form
-              onSubmit={handleSubmit((data) => {
-                console.log('data', data)
-              })}
+              onSubmit={
+                paymentSlip
+                  ? handleSubmit(handleConfirmBookClick)
+                  : (e) => {
+                      e.preventDefault()
+                    }
+              }
             >
               <Grid container>
                 <TableContainer>
@@ -306,6 +309,8 @@ export default function SpringModal(props) {
                     name="phone_number"
                     variant="outlined"
                     size="small"
+                    error={!!errors?.phone_number}
+                    helperText={errors?.phone_number?.message}
                   />
                 </Grid>
                 <Grid item xs={3} className={classes.value}>
@@ -318,7 +323,13 @@ export default function SpringModal(props) {
                       className={classes.input}
                       id="contained-button-file"
                       type="file"
-                      {...register('payment_slip')}
+                      onChange={(e) => {
+                        console.log(e.target.files)
+                        //FIXME
+                        setPaymentSlip(e.target.files)
+                      }}
+                      //FIXME ––––––––––––––––––– figure out how to store filelist as state before sending to back
+                      //payment_slip: "[object FileList]"
                       name="payment_slip"
                     />
                     <label htmlFor="contained-button-file">
@@ -343,7 +354,8 @@ export default function SpringModal(props) {
                     variant="outlined"
                     defaultValue={bookingInfo.remarks}
                     size="small"
-                    // style={{ width: '500px' }}
+                    error={!!errors?.email}
+                    helperText={errors?.email?.message}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.value}></Grid>
@@ -357,6 +369,8 @@ export default function SpringModal(props) {
                     variant="outlined"
                     size="small"
                     multiline="true"
+                    error={!!errors?.remarks}
+                    helperText={errors?.remarks?.message}
                   />
                 </Grid>
                 <Grid item xs={6}></Grid>
@@ -371,7 +385,6 @@ export default function SpringModal(props) {
                   onClick={() => {
                     setOpenConfirmModal(true)
                   }}
-                  //TODO ask "Confirm delete enquiry?"
                   size="small"
                   style={{ margin: '0 5px' }}
                 >
@@ -381,8 +394,8 @@ export default function SpringModal(props) {
                   open={openConfirmModal}
                   setOpenConfirmModal={setOpenConfirmModal}
                   handleConfirmClick={handleConfirmDeleteClick}
-                  confirmMessage={`You are cancelling this reservation ID: ${bookingInfo.id}, Guest: ${bookingInfo.guest}.`}
-                  confirmTitle={'Cancel this reservation...'}
+                  confirmMessage={`You are deleting enquiry ID: ${bookingInfo.id}, Guest: ${bookingInfo.guest}.`}
+                  confirmTitle={'Delete enquiry...'}
                 />
                 <Button
                   variant="contained"
@@ -392,9 +405,19 @@ export default function SpringModal(props) {
                   type="submit"
                   size="small"
                   style={{ margin: '0 5px' }}
+                  onClick={() =>
+                    !!!paymentSlip ? setOpenConfirmBookModal(true) : null
+                  }
                 >
                   CONFIRM BOOKING
                 </Button>
+                <ConfirmModal
+                  open={openConfirmBookModal}
+                  setOpenConfirmModal={setOpenConfirmBookModal}
+                  handleConfirmClick={handleConfirmBookClick}
+                  confirmMessage={`Confirm reservation ${bookingInfo.id}, Guest: ${bookingInfo.guest} without payment?`}
+                  confirmTitle={'Confirm unpaid booking...'}
+                />
               </div>
             </form>
           </div>

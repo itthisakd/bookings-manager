@@ -101,27 +101,6 @@ Fade.propTypes = {
   onExited: PropTypes.func
 }
 
-const nightsGenerator = (inDD, outDD) => {
-  const inD = DateTime.fromISO(inDD)
-  const outD = DateTime.fromISO(outDD)
-  const nights = outD.diff(inD, 'days').toObject().days
-  let datesISO = []
-  let i = 0
-  let tempDate = inD
-  while (datesISO.length !== nights) {
-    datesISO.push(tempDate.plus({ days: i++ }).toISODate())
-  }
-  const datesReformatted = datesISO.map((night) => {
-    let temp = DateTime.fromISO(night)
-      .toLocaleString(DateTime.DATE_MED)
-      .toUpperCase()
-      .split(',')
-      .map((item) => item.split(' '))
-    return temp[0]
-  })
-  return { nights, datesISO, datesReformatted }
-}
-
 export default function SpringModal(props) {
   const classes = useStyles()
   const {
@@ -145,14 +124,35 @@ export default function SpringModal(props) {
   })
 
   const handleConfirmClick = async () => {
-    console.log({
-      id: bookingInfo.id,
-      status: 'cancelled'
-    })
     await axios.patch('/reservations/', {
       id: bookingInfo.id,
-      status: 'cancelled'
+      status: 'cancelled',
+      remarks: `
+      ${bookingInfo.remarks}
+      –––––––Original booking details––––––––
+      Guest: ${bookingInfo.guest},
+      Check-in: ${bookingInfo.checkIn},
+      Check-out: ${bookingInfo.checkOut},
+      Amount: ${bookingInfo.amount},
+      Payment Status: ${bookingInfo.paid ? 'PAID' : 'UNPAID'},
+      Rooms: ${Object.entries(
+        bookingInfo.rooms
+          .map((room) => room.type)
+          .reduce(function (acc, curr) {
+            if (typeof acc[curr] == 'undefined') {
+              acc[curr] = 1
+            } else {
+              acc[curr] += 1
+            }
+
+            return acc
+          }, {})
+      )
+        .map((item) => item.join(' x'))
+        .join(', ')}
+      `
     })
+    await axios.delete(`/reservations/nights/${bookingInfo.id}`)
     setOpen(false)
     setOpenConfirmModal(false)
     fetchReservations().then(() => {

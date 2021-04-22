@@ -19,7 +19,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3)
+    padding: theme.spacing(2, 4, 3),
+    width: '500px'
   },
   title: {
     margin: '20 0 20 0'
@@ -110,7 +111,7 @@ export default function SpringModal(props) {
                 onClick={() => {
                   setOpenConfirmModal(false)
                 }}
-                color="secondary"
+                color="default"
               >
                 NO
               </Button>
