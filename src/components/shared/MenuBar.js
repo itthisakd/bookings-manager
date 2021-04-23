@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { fade, makeStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -13,6 +13,8 @@ import { useHistory } from 'react-router-dom'
 import MenuButton from './MenuButton'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
+import localStorageService from '../../services/localStorageService'
+import { AuthContext } from '../../contexts/AuthContextProvider'
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -79,6 +81,8 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function PrimarySearchAppBar() {
+  const { setIsAuthenticated } = useContext(AuthContext)
+
   const history = useHistory()
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -100,8 +104,13 @@ export default function PrimarySearchAppBar() {
     handleMobileMenuClose()
   }
 
-  const menuId = 'primary-search-account-menu'
+  const handleLogout = () => {
+    localStorageService.clearToken()
+    setIsAuthenticated({ token: false, role: 'GUEST' })
+    history.push('/login')
+  }
 
+  const menuId = 'primary-search-account-menu'
   const mobileMenuId = 'primary-search-account-menu-mobile'
 
   return (
@@ -161,9 +170,7 @@ export default function PrimarySearchAppBar() {
               open={isMenuOpen}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={() => history.push('/login')}>
-                Log Out
-              </MenuItem>
+              <MenuItem onClick={handleLogout}>Log Out</MenuItem>
             </Menu>
           </div>
         </Toolbar>

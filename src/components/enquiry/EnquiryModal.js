@@ -331,7 +331,6 @@ export default function SpringModal({
                       id="contained-button-file"
                       type="file"
                       onChange={(e) => {
-                        //FIXME
                         setPaymentSlip(e.target.files[0])
                       }}
                       name="payment_slip"
@@ -362,7 +361,12 @@ export default function SpringModal({
                     helperText={errors?.email?.message}
                   />
                 </Grid>
-                <Grid item xs={6} className={classes.value}></Grid>
+                <Grid item xs={3} className={classes.value}></Grid>
+                <Grid item xs={3} className={classes.value}>
+                  <Typography variant="caption" component="p">
+                    {paymentSlip.name}
+                  </Typography>
+                </Grid>
                 <Grid item xs={2} className={classes.value}>
                   Remarks:
                 </Grid>
@@ -394,13 +398,7 @@ export default function SpringModal({
                 >
                   DELETE ENQUIRY
                 </Button>
-                <ConfirmModal
-                  open={openConfirmModal}
-                  setOpenConfirmModal={setOpenConfirmModal}
-                  handleConfirmClick={handleConfirmDeleteClick}
-                  confirmMessage={`You are deleting enquiry ID: ${bookingInfo.id}, Guest: ${bookingInfo.guest}.`}
-                  confirmTitle={'Delete enquiry...'}
-                />
+
                 <Button
                   variant="contained"
                   color="primary"
@@ -415,15 +413,22 @@ export default function SpringModal({
                 >
                   CONFIRM BOOKING
                 </Button>
-                <ConfirmModal
-                  open={openConfirmBookModal}
-                  setOpenConfirmModal={setOpenConfirmBookModal}
-                  handleConfirmClick={handleConfirmBookClick}
-                  confirmMessage={`Confirm reservation ${bookingInfo.id}, Guest: ${bookingInfo.guest} without payment?`}
-                  confirmTitle={'Confirm unpaid booking...'}
-                />
               </div>
             </form>
+            <ConfirmModal
+              open={openConfirmModal}
+              setOpenConfirmModal={setOpenConfirmModal}
+              handleConfirmClick={handleConfirmDeleteClick}
+              confirmMessage={`You are deleting enquiry ID: ${bookingInfo.id}, Guest: ${bookingInfo.guest}.`}
+              confirmTitle={'Delete enquiry...'}
+            />
+            <ConfirmModal
+              open={openConfirmBookModal}
+              setOpenConfirmModal={setOpenConfirmBookModal}
+              handleConfirmClick={handleConfirmBookClick}
+              confirmMessage={`Confirm reservation ${bookingInfo.id}, Guest: ${bookingInfo.guest} without payment?`}
+              confirmTitle={'Confirm unpaid booking...'}
+            />
           </div>
         </Fade>
       </Modal>

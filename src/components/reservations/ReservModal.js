@@ -22,6 +22,7 @@ import ClearIcon from '@material-ui/icons/Clear'
 import ConfirmModal from '../shared/ConfirmModal'
 import Snackbar from '../shared/Snackbar'
 import axios from '../../config/axios'
+import PhotoModal from '../reservations/PhotoModal'
 
 const { DateTime } = require('luxon')
 
@@ -119,6 +120,8 @@ export default function SpringModal(props) {
     setOpenConfirmModal
   } = props
   const [remarks, setRemarks] = useState('')
+  const [openPhoto, setOpenPhoto] = useState(false)
+
   const [openSnackbar, setOpenSnackbar] = useState({
     open: false
   })
@@ -261,8 +264,17 @@ export default function SpringModal(props) {
                   <Grid item xs={6} className={classes.key}>
                     Payment Status:
                   </Grid>
-                  <Grid item xs={6} className={classes.value}>
+                  <Grid item xs={3} className={classes.value}>
                     {bookingInfo.paid ? 'PAID' : 'UNPAID'}
+                  </Grid>
+                  <Grid item xs={3} className={classes.value}>
+                    {bookingInfo.paid ? (
+                      <PhotoModal
+                        open={openPhoto}
+                        setOpen={setOpenPhoto}
+                        imageUrl={bookingInfo.paymentSlip}
+                      />
+                    ) : null}
                   </Grid>
                   <Grid item xs={6} className={classes.key}>
                     Amount:
@@ -382,11 +394,19 @@ export default function SpringModal(props) {
                 </Grid>
                 <Grid item xs={3}></Grid>
                 <Grid item xs={1} className={classes.subKey}>
-                  Email
+                  Email:
                 </Grid>
                 <Grid item xs={3} className={classes.subValue}>
                   {bookingInfo.email}
                 </Grid>
+                {/*  */}
+                <Grid item xs={2} className={classes.subKey}>
+                  Staff:{' '}
+                </Grid>
+                <Grid item xs={3} className={classes.subValue}>
+                  {bookingInfo.staff}
+                </Grid>
+                <Grid item xs={8}></Grid>
               </Grid>
             </div>
             {bookingInfo.status !== 'cancelled' && (

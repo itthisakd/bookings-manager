@@ -3,19 +3,18 @@ import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import TextField from '@material-ui/core/TextField'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
-import Link from '@material-ui/core/Link'
-import Grid from '@material-ui/core/Grid'
-import Box from '@material-ui/core/Box'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
-/** @jsxImportSource @emotion/react */
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useContext, useState } from 'react'
+import axios from '../config/axios'
 import { useHistory } from 'react-router-dom'
-import Copyright from '../components/Copyright'
+import localStorageService from '../services/localStorageService'
+import { AuthContext } from '../contexts/AuthContextProvider'
+import Snackbar from '../components/shared/Snackbar'
+import jwt_decode from 'jwt-decode'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,20 +39,39 @@ const useStyles = makeStyles((theme) => ({
 export default function LogInPage() {
   const classes = useStyles()
   const history = useHistory()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm()
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState({})
+  const [openSnackbar, setOpenSnackbar] = useState(false)
 
-  const validateInput = () => {
-    const newError = {}
-    if (!username) newError.username = 'Username required.'
-    if (!password) newError.password = 'Password required.'
-    setError(newError)
+  const handleLogin = async (data) => {
+    try {
+      const res = await axios.post('/login', {
+        username: data.username,
+        password: data.password
+      })
+      reset()
+      localStorageService.setToken(res.data.token)
+      console.log('res.data', res.data)
+
+      const decoded = jwt_decode(res.data.token)
+      const role = decoded.position.toUpperCase()
+      await setIsAuthenticated({ token: res.data.token, role })
+
+      role === 'SUPERADMIN' ? history.push('/staff') : history.push('/today')
+    } catch (err) {
+      console.dir(err)
+      if (err) setOpenSnackbar(true)
+    }
   }
-
   return (
     <Container component="main" maxWidth="xs">
+      {console.log('IsAuthenticated :>> ', isAuthenticated)}
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -62,7 +80,8 @@ export default function LogInPage() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+
+        <form className={classes.form} onSubmit={handleSubmit(handleLogin)}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -71,10 +90,8 @@ export default function LogInPage() {
             id="username"
             label="Username"
             name="username"
-            autoComplete="username"
             autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            {...register('username')}
           />
           <TextField
             variant="outlined"
@@ -85,13 +102,7 @@ export default function LogInPage() {
             label="Password"
             type="password"
             id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
+            {...register('password')}
           />
           <Button
             type="submit"
@@ -102,23 +113,14 @@ export default function LogInPage() {
           >
             Sign In
           </Button>
-          <Grid container>
-            {/* <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid> */}
-            <Grid item>
-              <Link onClick={() => history.push('/register')} variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
+          <Snackbar
+            status="error"
+            message="Incorrect username or password."
+            open={openSnackbar}
+            setOpen={setOpenSnackbar}
+          />
         </form>
       </div>
-      <Box mt={5}>
-        <Copyright />
-      </Box>
     </Container>
   )
 }

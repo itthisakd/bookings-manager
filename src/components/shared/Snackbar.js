@@ -51,20 +51,20 @@ export default function CustomizedSnackbars({
   )
 }
 
-{
-  /* 
-  const [openSnackbar, setOpenSnackbar] = useState({open: false})
-  
-    setOpenSnackbar({
-        open: true,
-        status: 'success',
-        message: 'Account deactivated successfully!'
-      })
+// {
 
-  <Snackbar
-        status="success"
-        message="Staff created successfully!"
-        open={openSnackbar}
-        setOpen={setOpenSnackbar}
-      /> */
-}
+//   const [openSnackbar, setOpenSnackbar] = useState({open: false})
+
+//     setOpenSnackbar({
+//         open: true,
+//         status: 'success',
+//         message: 'Account deactivated successfully!'
+//       })
+
+//   <Snackbar
+//         status="success"
+//         message="Staff created successfully!"
+//         open={openSnackbar}
+//         setOpen={setOpenSnackbar}
+//       />
+// }
