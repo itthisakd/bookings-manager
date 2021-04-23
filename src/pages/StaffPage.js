@@ -1,5 +1,4 @@
-/** @jsxImportSource @emotion/react */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import React from 'react'
 import MenuBar from '../components/shared/MenuBar.js'
 import Container from '@material-ui/core/Container'
@@ -16,11 +15,24 @@ import Typography from '@material-ui/core/Typography'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import StaffCreateModal from '../components/staff/StaffCreateModal'
 import StaffRemoveModal from '../components/staff/StaffRemoveModal'
+import axios from '../config/axios'
 
 export default function StaffPage() {
   const [openCreateModal, setOpenCreateModal] = useState(false)
   const [openRemoveModal, setOpenRemoveModal] = useState(false)
   const [currentRow, setCurrentRow] = useState(0)
+  const [staffList, setStaffList] = useState([])
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+
+  const fetchStaff = async () => {
+    const res = await axios.get('/staff/')
+    setStaffList(res.data.staffs)
+    console.log(res.data.staffs)
+  }
+
+  useEffect(() => {
+    fetchStaff()
+  }, [])
 
   const handleCreateClick = () => {
     setOpenCreateModal(true)
@@ -35,33 +47,17 @@ export default function StaffPage() {
     setCurrentRow(0)
   }
 
-  const handleConfirmRemove = (id) => {
-    // TODO –––––––––––– add DELETE API method
-    // set the position of the staff with this ID to deactivated
+  const handleConfirmRemove = async () => {
+    await axios.patch('/staff/', { id: currentRow, position: 'deactivated' })
+    fetchStaff().then(() => {
+      setOpenSnackbar({
+        open: true,
+        status: 'success',
+        message: 'Account deactivated successfully!'
+      })
+    })
     setOpenRemoveModal(false)
     setCurrentRow(0)
-  }
-
-  // TODO –––––––––––––– add GET API method to get following data
-  const staffList = {
-    staff: [
-      {
-        id: 1,
-        username: 'aum',
-        password: '1234',
-        name: 'Itthisak D.',
-        staffNumber: '112',
-        position: 'superadmin'
-      },
-      {
-        id: 2,
-        username: 'chris',
-        password: 'qwer',
-        name: 'Chris W.',
-        staffNumber: '113',
-        position: 'admin'
-      }
-    ]
   }
 
   // TODO –––––––––––––––––––– add loading & delete completed pop up
@@ -110,8 +106,8 @@ export default function StaffPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {staffList.staff.map((staff) => {
-                return (
+              {staffList.map((staff) => {
+                return staff.position === 'deactivated' ? null : (
                   <TableRow>
                     <TableCell>{staff.id}</TableCell>
                     <TableCell>{staff.username}</TableCell>
@@ -119,18 +115,20 @@ export default function StaffPage() {
                     <TableCell>{staff.staffNumber}</TableCell>
                     <TableCell>{staff.position}</TableCell>
                     <TableCell>
-                      <Button
-                        variant="contained"
-                        color="default"
-                        size="small"
-                        startIcon={<DeleteForeverIcon />}
-                        onClick={() => {
-                          setOpenRemoveModal(true)
-                          setCurrentRow(staff.id)
-                        }}
-                      >
-                        REMOVE
-                      </Button>
+                      {staff.position === 'superadmin' ? null : (
+                        <Button
+                          variant="contained"
+                          color="default"
+                          size="small"
+                          startIcon={<DeleteForeverIcon />}
+                          onClick={() => {
+                            setOpenRemoveModal(true)
+                            setCurrentRow(staff.id)
+                          }}
+                        >
+                          REMOVE
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 )
@@ -142,6 +140,10 @@ export default function StaffPage() {
       <StaffCreateModal
         open={openCreateModal}
         handleClose={handleCreateModalClose}
+        fetchStaff={fetchStaff}
+        openSnackbar={openSnackbar}
+        setOpenSnackbar={setOpenSnackbar}
+        staff={staffList.map((staff) => staff.username)}
       />
       <StaffRemoveModal
         open={openRemoveModal}

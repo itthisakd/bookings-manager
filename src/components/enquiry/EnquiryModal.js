@@ -130,9 +130,7 @@ export default function SpringModal({
   handleOpen,
   handleClose,
   bookingInfo,
-  editRemarks,
   fetchReservations,
-  setEditRemarks,
   openConfirmModal,
   setOpenConfirmModal
 }) {
@@ -146,14 +144,23 @@ export default function SpringModal({
     resolver: yupResolver(schema)
   })
   const [paymentSlip, setPaymentSlip] = useState('')
-  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [openSnackbar, setOpenSnackbar] = useState({ open: false })
   const [openConfirmBookModal, setOpenConfirmBookModal] = useState(false)
 
-  const handleConfirmBookClick = async () => {
-    await axios.patch('/reservations/', {
-      id: bookingInfo.id,
-      status: 'booked',
-      paid: paymentSlip ? 1 : 0
+  const handleConfirmBookClick = async (data) => {
+    const formData = new FormData()
+    formData.append('id', bookingInfo.id)
+    formData.append('status', 'booked')
+    formData.append('paid', paymentSlip ? 1 : 0)
+    if (paymentSlip) formData.append('image', paymentSlip)
+    if (data.phone_number) formData.append('phone_number', data.phone_number)
+    if (data.remarks) formData.append('remarks', data.remarks)
+    if (data.email) formData.append('email', data.email)
+
+    await axios.patch('/reservations/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     })
     setOpen(false)
     setOpenConfirmBookModal(false)
@@ -324,12 +331,9 @@ export default function SpringModal({
                       id="contained-button-file"
                       type="file"
                       onChange={(e) => {
-                        console.log(e.target.files)
                         //FIXME
-                        setPaymentSlip(e.target.files)
+                        setPaymentSlip(e.target.files[0])
                       }}
-                      //FIXME ––––––––––––––––––– figure out how to store filelist as state before sending to back
-                      //payment_slip: "[object FileList]"
                       name="payment_slip"
                     />
                     <label htmlFor="contained-button-file">

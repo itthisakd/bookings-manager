@@ -13,38 +13,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import Snackbar from '../shared/Snackbar'
-
-const schema = yup.object().shape({
-  username: yup
-    .string()
-    .matches(
-      /^[a-z_0-9]{4,15}$/g,
-      'Username must be alphanumeric and between 4 and 15 characters.'
-    )
-    .required('Username is required.'),
-  name: yup
-    .string()
-    .matches(/^[a-zA-Z. ]{3,15}$/g, 'Name must be alphabetical.')
-    .required('Name is required.'),
-  staffNumber: yup
-    .string()
-    .matches(/^[0-9]{1,7}$/g, 'Staff number must be numeric.')
-    .required('Staff number is required.'),
-  password: yup
-    .string()
-    .matches(
-      /^[a-z_0-9]{6,15}$/g,
-      'Password must be contain at least one number and one alphabet and be between longer than 6 characters.'
-    )
-    .required('Password is required'),
-  confirmPassword: yup
-    .string()
-    .matches(
-      /^[a-z_0-9]{6,15}$/g,
-      'Password must be contain at least one number and one alphabet and be between longer than 6 characters.'
-    )
-    .required('Password is required')
-})
+import axios from '../../config/axios'
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -95,9 +64,46 @@ Fade.propTypes = {
   onExited: PropTypes.func
 }
 
-export default function SpringModal({ open, handleClose }) {
+export default function SpringModal({
+  open,
+  handleClose,
+  fetchStaff,
+  openSnackbar,
+  setOpenSnackbar,
+  staff
+}) {
   const classes = useStyles()
-  const [openSnackbar, setOpenSnackbar] = useState(false)
+
+  const schema = yup.object().shape({
+    username: yup
+      .string()
+      .matches(
+        /^[a-z_0-9]{4,15}$/g,
+        'Username must be alphanumeric and between 4 and 15 characters.'
+      )
+      .notOneOf(staff, 'Username already taken.')
+      .required('Username is required.'),
+    name: yup
+      .string()
+      .matches(/^[a-zA-Z. ]{3,15}$/g, 'Name must be alphabetical.')
+      .required('Name is required.'),
+    staffNumber: yup
+      .string()
+      .matches(/^[0-9]{1,7}$/g, 'Staff number must be numeric.')
+      .required('Staff number is required.'),
+    password: yup
+      .string()
+      .matches(
+        /^[a-z_0-9]{6,15}$/g,
+        'Password must be contain at least one number and one alphabet and be between longer than 6 characters.'
+      )
+      .required('Password is required'),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('password'), null], 'Passwords must match')
+      .required('Password is required')
+  })
+
   const {
     register,
     handleSubmit,
@@ -107,19 +113,23 @@ export default function SpringModal({ open, handleClose }) {
     resolver: yupResolver(schema)
   })
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     //TODO POST API method to create staff account
-    console.log(data)
-    console.log('errors :>> ', errors)
-    setOpenSnackbar(true)
+    await axios.post('/staff/', { ...data })
+    fetchStaff().then()
+    setOpenSnackbar({
+      open: true,
+      status: 'success',
+      message: 'Staff with username created successfully!'
+    })
     if (data) handleClose()
   }
 
   return (
     <div>
       <Snackbar
-        status="success"
-        message="Staff created successfully!"
+        status={openSnackbar.status}
+        message={openSnackbar.message}
         open={openSnackbar}
         setOpen={setOpenSnackbar}
       />
@@ -155,9 +165,7 @@ export default function SpringModal({ open, handleClose }) {
                   type="text"
                   variant="outlined"
                   className={classes.input}
-                  {...register('username', {
-                    required: 'Username required!'
-                  })}
+                  {...register('username')}
                   error={!!errors?.username}
                   helperText={errors?.username?.message}
                 />
@@ -182,9 +190,7 @@ export default function SpringModal({ open, handleClose }) {
                   type="number"
                   variant="outlined"
                   className={classes.input}
-                  {...register('staffNumber', {
-                    required: 'Staff Number required!'
-                  })}
+                  {...register('staffNumber')}
                   error={!!errors?.staffNumber}
                   helperText={errors?.staffNumber?.message}
                 />

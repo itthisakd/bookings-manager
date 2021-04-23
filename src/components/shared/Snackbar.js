@@ -32,7 +32,7 @@ export default function CustomizedSnackbars({
     if (redirect) {
       redirect()
     }
-    setOpen({ open: false })
+    setOpen(false)
   }
 
   return (
@@ -53,9 +53,13 @@ export default function CustomizedSnackbars({
 
 {
   /* 
-  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [openSnackbar, setOpenSnackbar] = useState({open: false})
   
-    setOpenSnackbar(true)
+    setOpenSnackbar({
+        open: true,
+        status: 'success',
+        message: 'Account deactivated successfully!'
+      })
 
   <Snackbar
         status="success"
