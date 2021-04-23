@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import MenuBar from '../components/shared/MenuBar.js'
 import React from 'react'
 import TextField from '@material-ui/core/TextField'
@@ -13,6 +13,7 @@ import * as yup from 'yup'
 import axios from '../config/axios'
 import { useHistory } from 'react-router-dom'
 import nightsGenerator from '../utilities/nightsGenerator'
+import { AuthContext } from '../contexts/AuthContextProvider'
 
 const { DateTime } = require('luxon')
 
@@ -51,6 +52,8 @@ export default function AddBookingPage() {
     resolver: yupResolver(schema)
   })
 
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
+
   const onFindClick = () => {
     if (dateIn && dateOut) {
       setNightsObj(nightsGenerator(dateIn, dateOut))
@@ -63,12 +66,13 @@ export default function AddBookingPage() {
   }
 
   const onCreateClick = async () => {
+    console.log('HERE', isAuthenticated)
     if (nightsChecked) {
       await axios
         .post('/reservations/', {
           guest: details.guest,
           status: 'enquiry',
-          staff_id: 1,
+          staffId: isAuthenticated.staffId,
           checkIn: nightsChecked[0].date,
           checkOut: DateTime.fromISO(
             nightsChecked[nightsChecked.length - 1].date

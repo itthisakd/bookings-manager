@@ -60,8 +60,13 @@ export default function LogInPage() {
       console.log('res.data', res.data)
 
       const decoded = jwt_decode(res.data.token)
+      console.log(decoded)
       const role = decoded.position.toUpperCase()
-      await setIsAuthenticated({ token: res.data.token, role })
+      await setIsAuthenticated({
+        token: res.data.token,
+        role,
+        staffId: decoded.id
+      })
 
       role === 'SUPERADMIN' ? history.push('/staff') : history.push('/today')
     } catch (err) {

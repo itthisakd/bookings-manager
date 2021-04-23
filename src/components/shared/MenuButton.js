@@ -12,10 +12,12 @@ const menuOptions = {
     { path: '/addbooking', name: 'New Booking' },
     { path: '/today', name: 'Today' },
     { path: '/reservations', name: 'Reservations' },
-    { path: '/enquiry', name: 'Enquiries' },
-    { path: '/rates', name: 'Rates' }
+    { path: '/enquiry', name: 'Enquiries' }
   ],
-  SUPERADMIN: [{ path: '/staff', name: 'Staff' }]
+  SUPERADMIN: [
+    { path: '/staff', name: 'Staff' },
+    { path: '/rates', name: 'Rates' }
+  ]
 }
 
 export default function SimpleMenu() {

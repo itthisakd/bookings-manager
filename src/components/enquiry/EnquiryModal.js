@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Modal from '@material-ui/core/Modal'
@@ -22,6 +22,7 @@ import ConfirmModal from '../shared/ConfirmModal'
 import axios from '../../config/axios'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import { AuthContext } from '../../contexts/AuthContextProvider'
 
 const { DateTime } = require('luxon')
 
@@ -236,6 +237,12 @@ export default function SpringModal({
                       'dd LLL yyyy'
                     )}
                   </Grid>
+                  <Grid item xs={6} className={classes.key}>
+                    Staff:{' '}
+                  </Grid>
+                  <Grid item xs={6} className={classes.value}>
+                    {bookingInfo.staff}
+                  </Grid>
                 </Grid>
               </div>
               <div className="w-1/2 p-0">
@@ -250,8 +257,9 @@ export default function SpringModal({
                     Amount:
                   </Grid>
                   <Grid item xs={6} className={classes.value}>
-                    {bookingInfo.amount}
+                    {Number(bookingInfo.amount).toFixed(2)}
                   </Grid>
+                  <Grid item xs={12} className={classes.key}></Grid>
                 </Grid>
               </div>
             </Container>
@@ -288,7 +296,7 @@ export default function SpringModal({
                               )}
                             </TableCell>
                             <TableCell>
-                              {DateTime.fromISO(row.checkIn).toFormat(
+                              {DateTime.fromISO(row.checkOut).toFormat(
                                 'dd LLL yyyy'
                               )}
                             </TableCell>
