@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Modal from '@material-ui/core/Modal'
@@ -22,7 +22,7 @@ import ConfirmModal from '../shared/ConfirmModal'
 import axios from '../../config/axios'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { AuthContext } from '../../contexts/AuthContextProvider'
+// import { AuthContext } from '../../contexts/AuthContextProvider'
 
 const { DateTime } = require('luxon')
 
@@ -128,7 +128,7 @@ const schema = yup.object().shape({
 export default function SpringModal({
   open,
   setOpen,
-  handleOpen,
+  // handleOpen,
   handleClose,
   bookingInfo,
   fetchReservations,
@@ -401,7 +401,6 @@ export default function SpringModal({
                   onClick={() => {
                     setOpenConfirmModal(true)
                   }}
-                  size="small"
                   style={{ margin: '0 5px' }}
                 >
                   DELETE ENQUIRY
@@ -413,7 +412,6 @@ export default function SpringModal({
                   size="small"
                   startIcon={<CheckIcon />}
                   type="submit"
-                  size="small"
                   style={{ margin: '0 5px' }}
                   onClick={() =>
                     !!!paymentSlip ? setOpenConfirmBookModal(true) : null

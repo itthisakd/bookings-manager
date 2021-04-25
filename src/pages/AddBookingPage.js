@@ -5,7 +5,6 @@ import TextField from '@material-ui/core/TextField'
 import Container from '@material-ui/core/Container'
 import Button from '@material-ui/core/Button'
 import VacancyTable from '../components/addbooking/VacancyTable'
-import { makeStyles } from '@material-ui/core/styles'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Snackbar from '../components/shared/Snackbar'
@@ -17,15 +16,6 @@ import { AuthContext } from '../contexts/AuthContextProvider'
 
 const { DateTime } = require('luxon')
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    '& .MuiTextField-root': {
-      margin: theme.spacing(1),
-      width: '25ch'
-    }
-  }
-}))
-
 const schema = yup.object().shape({
   guest: yup.string().required('Guest Name is required.'),
   checkIn: yup.date().required('Check-in Date is required.'),
@@ -33,7 +23,6 @@ const schema = yup.object().shape({
 })
 
 export default function AddBookingPage() {
-  const classes = useStyles()
   const [dateIn, setDateIn] = useState('')
   const [dateOut, setDateOut] = useState('')
   const [nightsObj, setNightsObj] = useState({})
@@ -52,7 +41,7 @@ export default function AddBookingPage() {
     resolver: yupResolver(schema)
   })
 
-  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
+  const { isAuthenticated } = useContext(AuthContext)
 
   const onFindClick = () => {
     if (dateIn && dateOut) {

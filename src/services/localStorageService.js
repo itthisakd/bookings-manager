@@ -1,5 +1,3 @@
-import jwt_decode from 'jwt-decode'
-
 const tokenName = 'token'
 const setToken = (token) => localStorage.setItem(tokenName, token)
 const getToken = () => localStorage.getItem(tokenName)
@@ -19,5 +17,4 @@ export default {
   setToken,
   getToken,
   clearToken
-  // getRole
 }

@@ -12,7 +12,7 @@ import Button from '@material-ui/core/Button'
 import axios from '../../config/axios'
 import dynamicSort from '../../utilities/dynamicSort'
 
-const { DateTime } = require('luxon')
+// const { DateTime } = require('luxon')
 
 const useStyles = makeStyles({
   table: {
@@ -128,13 +128,13 @@ export default function DenseTable(props) {
 }
 
 //return data
-const data = {
-  guest: 'Guest',
-  checkIn: '2020-12-12',
-  checkOut: '2020-12-13',
-  nightsChecked: [
-    { room: 110, date: '2021-04-20' },
-    { room: 110, date: '2021-04-21' },
-    { room: 111, date: '2021-04-21' }
-  ]
-}
+// const data = {
+//   guest: 'Guest',
+//   checkIn: '2020-12-12',
+//   checkOut: '2020-12-13',
+//   nightsChecked: [
+//     { room: 110, date: '2021-04-20' },
+//     { room: 110, date: '2021-04-21' },
+//     { room: 111, date: '2021-04-21' }
+//   ]
+// }

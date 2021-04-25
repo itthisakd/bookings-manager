@@ -1,10 +1,9 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import { useHistory } from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
-import localStorageService from '../../services/localStorageService'
 import { AuthContext } from '../../contexts/AuthContextProvider'
 
 const menuOptions = {
@@ -24,7 +23,7 @@ export default function SimpleMenu() {
   const history = useHistory()
   const [anchorEl, setAnchorEl] = React.useState(null)
 
-  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
+  const { isAuthenticated } = useContext(AuthContext)
   let role = isAuthenticated.role || 'GUEST'
 
   const handleClick = (event) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Modal from '@material-ui/core/Modal'
@@ -224,7 +224,6 @@ export default function SpringModal({
             <div className="p-5 block flex row justify-right align-center ">
               <Button
                 variant="contained"
-                color="default"
                 size="small"
                 startIcon={<AddCircleIcon />}
                 type="submit"

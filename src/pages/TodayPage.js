@@ -24,6 +24,7 @@ export default function TodayPage() {
   const classes = useStyles()
 
   const [date, setDate] = useState(DateTime.now().toString().slice(0, 10))
+
   return (
     <div>
       <MenuBar />

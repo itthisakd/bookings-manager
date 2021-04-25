@@ -42,7 +42,7 @@ export default function LogInPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
     reset
   } = useForm()
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext)
@@ -60,7 +60,7 @@ export default function LogInPage() {
       console.log('res.data', res.data)
 
       const decoded = jwt_decode(res.data.token)
-      console.log(decoded)
+      console.log('decode', decoded)
       const role = decoded.position.toUpperCase()
       await setIsAuthenticated({
         token: res.data.token,

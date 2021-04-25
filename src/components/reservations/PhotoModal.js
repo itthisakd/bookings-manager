@@ -86,7 +86,7 @@ export default function SpringModal({ open, setOpen, imageUrl }) {
       >
         <Fade in={open}>
           <div className={classes.paper}>
-            <img src={imageUrl} style={{ height: '500px' }} />
+            <img alt={imageUrl} src={imageUrl} style={{ height: '500px' }} />
           </div>
         </Fade>
       </Modal>

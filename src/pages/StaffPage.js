@@ -82,7 +82,6 @@ export default function StaffPage() {
           <div className="p-5">
             <Button
               variant="contained"
-              color="default"
               size="small"
               startIcon={<AddCircleIcon />}
               onClick={handleCreateClick}

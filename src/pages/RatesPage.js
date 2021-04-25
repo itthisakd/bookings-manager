@@ -20,7 +20,7 @@ import axios from '../config/axios'
 export default function RatesPage() {
   const [roomTypes, setRoomTypes] = useState([])
   const [editMode, setEditMode] = useState(false)
-  const { register, handleSubmit, getValues, errors, reset } = useForm()
+  const { register, handleSubmit, errors, reset } = useForm()
 
   const fetchRates = async () => {
     const res = await axios.get('/rates/')
@@ -93,7 +93,6 @@ export default function RatesPage() {
               {!!editMode && (
                 <Button
                   variant="contained"
-                  color="default"
                   size="small"
                   color="secondary"
                   startIcon={<SaveAltIcon />}

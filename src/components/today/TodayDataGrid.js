@@ -20,21 +20,20 @@ const useStyles = makeStyles({
   }
 })
 
-function array_move(arr, old_index, new_index) {
-  if (new_index >= arr.length) {
-    var k = new_index - arr.length + 1
-    while (k--) {
-      arr.push(undefined)
-    }
-  }
-  arr.splice(new_index, 0, arr.splice(old_index, 1)[0])
-  return arr // for testing
-}
+// function array_move(arr, old_index, new_index) {
+//   if (new_index >= arr.length) {
+//     var k = new_index - arr.length + 1
+//     while (k--) {
+//       arr.push(undefined)
+//     }
+//   }
+//   arr.splice(new_index, 0, arr.splice(old_index, 1)[0])
+//   return arr // for testing
+// }
 
 export default function BasicTable(props) {
   const classes = useStyles()
   const { check, date } = props
-  const [statusChange, setStatusChange] = useState({})
   const [open, setOpen] = useState(false)
   const [bookingInfo, setBookingInfo] = useState([])
   const [editRemarks, setEditRemarks] = useState(false)
@@ -223,9 +222,10 @@ export default function BasicTable(props) {
               {bookingInfo
                 .filter(
                   (booking) =>
-                    (booking.status === 'checkedin' ||
-                      booking.status === 'checkedout') &&
-                    booking.checkOut === date
+                    (booking.status === 'checkedin' &&
+                      booking.checkOut === date) ||
+                    (booking.status === 'checkedout' &&
+                      booking.checkOut === date)
                 )
                 .map((booking, idx, arr) => (
                   <TableRow

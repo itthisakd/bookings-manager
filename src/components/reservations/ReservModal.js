@@ -107,14 +107,14 @@ export default function SpringModal(props) {
   const {
     open,
     setOpen,
-    handleOpen,
+    // handleOpen,
     handleClose,
     bookingInfo,
     editRemarks,
     setEditRemarks,
-    bookedNightsByResv,
+    // bookedNightsByResv,
     today,
-    accessModal,
+    // accessModal,
     openConfirmModal,
     fetchReservations,
     setOpenConfirmModal
@@ -422,7 +422,6 @@ export default function SpringModal(props) {
                         setOpenConfirmModal(true)
                       }}
                       type="submit"
-                      size="small"
                       style={{ margin: '0 5px' }}
                     >
                       CANCEL BOOKING

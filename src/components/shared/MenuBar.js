@@ -85,11 +85,11 @@ export default function PrimarySearchAppBar() {
 
   const history = useHistory()
   const classes = useStyles()
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null)
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null)
 
   const isMenuOpen = Boolean(anchorEl)
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
+  // const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -111,7 +111,7 @@ export default function PrimarySearchAppBar() {
   }
 
   const menuId = 'primary-search-account-menu'
-  const mobileMenuId = 'primary-search-account-menu-mobile'
+  // const mobileMenuId = 'primary-search-account-menu-mobile'
 
   return (
     <div className={classes.grow}>

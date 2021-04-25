@@ -6,8 +6,6 @@ import Container from '@material-ui/core/Container'
 import ReservationsDataGrid from '../components/reservations/ReservationsDataGrid'
 import ReservModal from '../components/reservations/ReservModal'
 
-const { DateTime } = require('luxon')
-
 export default function ReservationsPage() {
   const [open, setOpen] = useState(false)
   const [bookingInfo, setBookingInfo] = useState({})
@@ -24,12 +22,7 @@ export default function ReservationsPage() {
   const fetchReservations = async () => {
     const res = await axios.get('/reservations/')
     setBookingInfoFrom(
-      res.data.result.filter(
-        (booking) =>
-          booking.status === 'booked' ||
-          booking.status === 'modified' ||
-          booking.status === 'cancelled'
-      )
+      res.data.result.filter((booking) => booking.status !== 'enquiry')
     )
   }
 

@@ -91,7 +91,6 @@ export default function SpringModal(props) {
             <div className="p-0 flex row justify-between align-center">
               <Button
                 variant="contained"
-                color="default"
                 size="small"
                 startIcon={<DeleteForeverIcon />}
                 onClick={handleConfirmRemove}
@@ -101,7 +100,6 @@ export default function SpringModal(props) {
               </Button>
               <Button
                 variant="contained"
-                color="default"
                 size="small"
                 startIcon={<CloseIcon />}
                 onClick={handleClose}

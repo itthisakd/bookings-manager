@@ -1,7 +1,6 @@
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import React from 'react'
-import { useContext, useState } from 'react'
-import localStorageService from './services/localStorageService'
+import { useContext } from 'react'
 import './App.css'
 import roles from './config/roles'
 import { AuthContext } from './contexts/AuthContextProvider'
@@ -10,20 +9,27 @@ function App() {
   const { setIsAuthenticated, isAuthenticated } = useContext(AuthContext)
 
   let role = isAuthenticated ? isAuthenticated.role : 'GUEST'
-  console.log(isAuthenticated)
 
   return (
     <div>
       <BrowserRouter>
         <Switch>
-          {roles[role].map(({ path, page: PageComponent }, idx) => {
-            console.log('path, page', path, PageComponent)
-            return (
-              <Route key={idx} exact path={path}>
-                <PageComponent />
-              </Route>
-            )
-          })}
+          {roles[role]
+            ? roles[role].map(({ path, page: PageComponent }, idx) => {
+                console.log('path, page', path, PageComponent)
+                return (
+                  <Route key={idx} exact path={path}>
+                    <PageComponent />
+                  </Route>
+                )
+              })
+            : roles['GUEST'].map(({ path, page: PageComponent }, idx) => {
+                return (
+                  <Route key={idx} exact path={path}>
+                    <PageComponent />
+                  </Route>
+                )
+              })}
           <Redirect to="/login" />
         </Switch>
       </BrowserRouter>
