@@ -18,7 +18,6 @@ const pages = {
 
 const roles = {
   ADMIN: [pages.today, pages.addbooking, pages.enquiry, pages.reservations],
-
   SUPERADMIN: [pages.staff, pages.rates],
   GUEST: [pages.login]
 }

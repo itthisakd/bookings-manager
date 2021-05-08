@@ -69,7 +69,7 @@ export default function DataGridDemo(props) {
   })
 
   return (
-    <div style={{ height: '100vh', width: '100%' }}>
+    <div style={{ height: '80vh', width: '100%' }}>
       <DataGrid
         rows={rows}
         columns={columns}

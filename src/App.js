@@ -14,22 +14,14 @@ function App() {
     <div>
       <BrowserRouter>
         <Switch>
-          {roles[role]
-            ? roles[role].map(({ path, page: PageComponent }, idx) => {
-                console.log('path, page', path, PageComponent)
-                return (
-                  <Route key={idx} exact path={path}>
-                    <PageComponent />
-                  </Route>
-                )
-              })
-            : roles['GUEST'].map(({ path, page: PageComponent }, idx) => {
-                return (
-                  <Route key={idx} exact path={path}>
-                    <PageComponent />
-                  </Route>
-                )
-              })}
+          {roles[role].map(({ path, page: PageComponent }, idx) => {
+            console.log('path, page', path, PageComponent)
+            return (
+              <Route key={idx} exact path={path}>
+                <PageComponent />
+              </Route>
+            )
+          })}
           <Redirect to="/login" />
         </Switch>
       </BrowserRouter>

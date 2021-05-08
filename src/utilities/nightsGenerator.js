@@ -10,6 +10,7 @@ const nightsGenerator = (inDD, outDD) => {
   while (datesISO.length !== nights) {
     datesISO.push(tempDate.plus({ days: i++ }).toISODate())
   }
+
   const datesReformatted = datesISO.map((night) => {
     let temp = DateTime.fromISO(night)
       .toLocaleString(DateTime.DATE_MED)
